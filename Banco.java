@@ -163,54 +163,57 @@ public class Banco {
 
         switch (resp) {
             case 1:
+                // ----- Criar conta ------
                 Conta cont = new Conta(); 
-                int answer = 0;
-                System.out.println("\n\nOpcao escolhida: \n\t1- Criar conta");
+                int answer = 1;
+                System.out.println("\n\nOpcao escolhida: \n\t1- Criar conta\n");
 
                 cont.setIdConta(id++);
-                System.out.print("Digite o Nome da Pessoa:");
-                cont.setNomePessoa(sc.nextLine());
-                System.out.print("Digite o Email:");
-                    cont.getEmail().add(sc.next());
-                
+                System.out.println("Digite o nome da pessoa:");
+                cont.setNomePessoa(sc.next());
                 do {
-                    System.out.print("Deseja o Email:");
+                    System.out.println("Digite o Email:");
                     cont.getEmail().add(sc.next());
-
+                    System.out.println("Deseja adicionar um novo email? sim ou nao");
+                    if(sc.next().equals("nao")){
+                        answer = 0;
+                    }
+            
                 } while (answer == 1);
-
-                System.out.print("Digite o Nome de Usuario:");
-                cont.setNomeUsuario(sc.nextLine());
-                System.out.print("Digite a Senha:");
-                cont.setNomePessoa(sc.nextLine());
-                System.out.print("Digite o Cpf:");
-                cont.setNomePessoa(sc.nextLine());
-                System.out.print("Digite a cidade:");
-                cont.setNomePessoa(sc.nextLine());
+                System.out.println("Digite o nome do Usuário:");
+                cont.setNomeUsuario(sc.next());
+                System.out.println("Digite a Senha:");
+                cont.setNomePessoa(sc.next());
+                System.out.println("Digite o CPF:");
+                cont.setNomePessoa(sc.next());
+                System.out.println("Digite a cidade:");
+                cont.setNomePessoa(sc.next());
                 break;
 
             case 2:
-                System.out.println("\n\nOpcao escolhida: \n\t 2- Realizar transferencia");
+                //  ----- Realizar Transferência -----
+                System.out.println("\n\nOpcao escolhida: \n\t 2- Realizar transferencia\n");
+                
                 break;
 
             case 3:
-                System.out.println("\n\nOpcao escolhida: \n\t3- Ler registro (ID)");
+                System.out.println("\n\nOpcao escolhida: \n\t3- Ler registro (ID)\n");
                 break;
 
             case 4:
-                System.out.println("\n\nOpcao escolhida: \n\t4- Atualizar registro");
+                System.out.println("\n\nOpcao escolhida: \n\t4- Atualizar registro\n");
                 break;
 
             case 5:
-                System.out.println("\n\nOpcao escolhida: \n\t5- Deletar registro");
+                System.out.println("\n\nOpcao escolhida: \n\t5- Deletar registro\n");
                 break;
 
             case 6:
-                System.out.println("\n\nOpcao escolhida: \n\t6- Ordenar arquivo");
+                System.out.println("\n\nOpcao escolhida: \n\t6- Ordenar arquivo\n");
                 break;
         
             default:
-            System.out.print("\n\nOpcao invalida!");
+            System.out.print("\n\nOpcao invalida!\n");
                 break;
         }
 
