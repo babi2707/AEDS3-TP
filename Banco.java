@@ -1,4 +1,3 @@
-
 /************************************************************
  * AEDS3 - TP01 
  * 
@@ -157,6 +156,7 @@ public class Banco {
         // --------------- menu ---------------
 
         do {
+            System.out.println("\n ----- Iniciando o Sistema --------");
             System.out.println("\n--------------- menu ---------------");
             System.out.println("\t1- Criar conta");
             System.out.println("\t2- Realizar transferencia");
@@ -215,19 +215,30 @@ public class Banco {
 
                         } while (arroba == 0 || ponto == 0);
 
-                        System.out.println("Deseja adicionar um novo email? 1 para sim ou 2 para nao");
+                        System.out.println("Deseja adicionar um novo email? (1 - sim / 2 - não)");
                         answer = sc.nextInt();
 
                     } while (answer == 1);
 
-                    System.out.print("Digite o Nome de Usuario:");
+                    System.out.print("Digite o username:");
                     cont.setNomeUsuario(sc.next());
                     System.out.print("Digite a Senha:");
-                    cont.setNomePessoa(sc.next());
-                    System.out.print("Digite o Cpf:");
-                    cont.setNomePessoa(sc.next());
+                    cont.setSenha(sc.next());
+
+                    // ------ loop para verificar se o CPF é valido ------
+                    do{
+                        System.out.print("Digite o Cpf:");
+                        cont.setCpf(sc.next());
+                        if(cont.getCpf().length() != 11){
+                            System.out.println("CPF inválido!");
+                        }
+
+                    }while(cont.getCpf().length() != 11);
+                    
                     System.out.print("Digite a cidade:");
-                    cont.setNomePessoa(sc.next());
+                    cont.setCidade(sc.next());
+                    cont.setSaldoConta(0); // Por uma nova conta o saldo inicial é zero
+                    cont.setTransferenciasRealizadas(0); // Por uma nova conta não existe transferências
 
                     saida.write("(" + cont.getIdconta() + ") " + cont.getNomePessoa() + " " + cont.getEmail() + " "
                             + cont.getNomeUsuario() + " " + cont.getSenha() + " " + cont.getCpf() + " "
@@ -235,6 +246,7 @@ public class Banco {
                             + " " + cont.getTransferenciasRealizadas() + " " + cont.getSaldoConta() + "\n");
 
                     account.add(cont);
+                    System.out.println("\nSua conta foi cadastrada com sucesso!");
                     break;
 
                 case 2:
@@ -242,7 +254,22 @@ public class Banco {
                     break;
 
                 case 3:
-                    System.out.println("\n\nOpcao escolhida: \n\t3- Ler registro (ID)");
+                    System.out.println("\n\nOpcao escolhida: \n\t3- Ler registro (ID)\n");
+
+                    // ------ loop para ler todas as contas que estão gravadas no arquivo ------
+                    for(int i  = 0; i < account.size(); i++){ // --- enquanto i não for do tamanho do arquivo, continua o loop
+                        System.out.println("ID: " + account.get(i).getIdconta());
+                        System.out.println("Nome da pessoa: " + account.get(i).getNomePessoa());
+                        System.out.println("Email: " + account.get(i).getEmail());
+                        System.out.println("Username: " + account.get(i).getNomeUsuario());
+                        System.out.println("Senha: " + account.get(i).getSenha());
+                        System.out.println("CPF: " + account.get(i).getCpf());
+                        System.out.println("Cidade: " + account.get(i).getCidade());
+                        System.out.println("Saldo da conta: " + account.get(i).getSaldoConta());
+                        System.out.println("Transferências já realizadas: " + account.get(i).getTransferenciasRealizadas());
+                    }
+
+                    System.out.println("\nArquivo de registros lido com sucesso!");
                     break;
 
                 case 4:
@@ -269,7 +296,7 @@ public class Banco {
 
                 // -------- mensagem de erro --------
                 if (r != 1 && r != 0) {
-                    System.out.print("Opcao invalida!");
+                    System.out.print("Opção invalida!");
                 }
 
                 // -------- mensagem de despedida --------
