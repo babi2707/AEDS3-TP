@@ -1,3 +1,4 @@
+
 /************************************************************
  * AEDS3 - TP01 
  * 
@@ -226,15 +227,15 @@ public class Banco {
                     cont.setSenha(sc.next());
 
                     // ------ loop para verificar se o CPF é valido ------
-                    do{
+                    do {
                         System.out.print("Digite o Cpf:");
                         cont.setCpf(sc.next());
-                        if(cont.getCpf().length() != 11){
+                        if (cont.getCpf().length() != 11) {
                             System.out.println("CPF inválido!");
                         }
 
-                    }while(cont.getCpf().length() != 11);
-                    
+                    } while (cont.getCpf().length() != 11);
+
                     System.out.print("Digite a cidade:");
                     cont.setCidade(sc.next());
                     cont.setSaldoConta(0); // Por uma nova conta o saldo inicial é zero
@@ -254,22 +255,39 @@ public class Banco {
                     break;
 
                 case 3:
+                    int numID = 0, count = 0;
                     System.out.println("\n\nOpcao escolhida: \n\t3- Ler registro (ID)\n");
 
+                    // -------- pegar a escolha do usuario --------
+                    System.out.print("Digite o numero do ID que deseja ler: ");
+                    numID = sc.nextInt();
+
                     // ------ loop para ler todas as contas que estão gravadas no arquivo ------
-                    for(int i  = 0; i < account.size(); i++){ // --- enquanto i não for do tamanho do arquivo, continua o loop
-                        System.out.println("ID: " + account.get(i).getIdconta());
-                        System.out.println("Nome da pessoa: " + account.get(i).getNomePessoa());
-                        System.out.println("Email: " + account.get(i).getEmail());
-                        System.out.println("Username: " + account.get(i).getNomeUsuario());
-                        System.out.println("Senha: " + account.get(i).getSenha());
-                        System.out.println("CPF: " + account.get(i).getCpf());
-                        System.out.println("Cidade: " + account.get(i).getCidade());
-                        System.out.println("Saldo da conta: " + account.get(i).getSaldoConta());
-                        System.out.println("Transferências já realizadas: " + account.get(i).getTransferenciasRealizadas());
+                    for (int i = 0; i < account.size(); i++) { // --- enquanto i não for do tamanho do arquivo, continua
+                                                               // o loop
+                        if (account.get(i).getIdconta() == numID) {
+                            System.out.println("\n\nID: " + account.get(i).getIdconta());
+                            System.out.println("Nome da pessoa: " + account.get(i).getNomePessoa());
+                            System.out.println("Email: " + account.get(i).getEmail());
+                            System.out.println("Username: " + account.get(i).getNomeUsuario());
+                            System.out.println("Senha: " + account.get(i).getSenha());
+                            System.out.println("CPF: " + account.get(i).getCpf());
+                            System.out.println("Cidade: " + account.get(i).getCidade());
+                            System.out.println("Saldo da conta: " + account.get(i).getSaldoConta());
+                            System.out.println(
+                                    "Transferências já realizadas: " + account.get(i).getTransferenciasRealizadas());
+                        } else {
+                            count++;
+                        }
                     }
 
-                    System.out.println("\nArquivo de registros lido com sucesso!");
+                    if (count == account.size()) {
+                        System.out.println("\nNumero ID não encontrado!");
+                    } else {
+                        System.out.println("\nArquivo de registros lido com sucesso!");
+                    }
+
+                    
                     break;
 
                 case 4:
