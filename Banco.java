@@ -1,4 +1,3 @@
-
 /************************************************************
  * AEDS3 - TP01 
  * 
@@ -176,7 +175,7 @@ public class Banco {
                 if (resp < 1 || resp > 6) {
                     System.out.print("Opcao invalida!");
                 }
-            } while (resp < 1 || resp > 6);
+            } while (resp < 1 || resp > 6); // repetir enquanto a opcao for invalida
 
             // --------------- realizar a opcao desejada ---------------
 
@@ -238,7 +237,10 @@ public class Banco {
 
                     System.out.print("Digite a cidade:");
                     cont.setCidade(sc.next());
-                    cont.setSaldoConta(0); // Por uma nova conta o saldo inicial é zero
+
+                    System.out.print("Digite o saldo da conta: R$");
+                    cont.setSaldoConta(sc.nextFloat()); // saldo da conta
+                    
                     cont.setTransferenciasRealizadas(0); // Por uma nova conta não existe transferências
 
                     saida.write("(" + cont.getIdconta() + ") " + cont.getNomePessoa() + " " + cont.getEmail() + " "
@@ -287,7 +289,6 @@ public class Banco {
                         System.out.println("\nArquivo de registros lido com sucesso!");
                     }
 
-                    
                     break;
 
                 case 4:
