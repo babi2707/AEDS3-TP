@@ -1,3 +1,4 @@
+
 /************************************************************
  * AEDS3 - TP01 
  * 
@@ -186,6 +187,8 @@ public class Banco {
                     System.out.println("\n\nOpcao escolhida: \n\t1- Criar conta");
 
                     cont.setIdConta(id++);
+                    System.out.println("Seu ID é: " + cont.getIdconta() + "\n\n");
+
                     System.out.print("Digite o Nome da Pessoa:");
                     cont.setNomePessoa(sc.next());
 
@@ -220,8 +223,29 @@ public class Banco {
 
                     } while (answer == 1);
 
-                    System.out.print("Digite o username:");
-                    cont.setNomeUsuario(sc.next());
+                    // -------- loop para verificar se o username é repetido --------
+                    int repeat = 0; // variavel para verificar se é repetido
+                    do {
+                        String tmp = "";
+                        System.out.print("Digite o username:");
+                        tmp = sc.next();
+
+                        for (int i = 0; i < account.size(); i++) {
+                            if (account.get(i).getNomeUsuario().contains(tmp)) {
+                                repeat++;
+                            } else {
+                                repeat = 0;
+                            }
+                        }
+
+                        if (repeat != 0) {
+                            System.out.println("Usuario invalido! Esse username ja existe. Escolha outro!");
+                        } else {
+                            cont.setNomeUsuario(tmp);
+                        }
+
+                    } while (repeat != 0);
+
                     System.out.print("Digite a Senha:");
                     cont.setSenha(sc.next());
 
@@ -240,7 +264,7 @@ public class Banco {
 
                     System.out.print("Digite o saldo da conta: R$");
                     cont.setSaldoConta(sc.nextFloat()); // saldo da conta
-                    
+
                     cont.setTransferenciasRealizadas(0); // Por uma nova conta não existe transferências
 
                     saida.write("(" + cont.getIdconta() + ") " + cont.getNomePessoa() + " " + cont.getEmail() + " "
@@ -293,6 +317,118 @@ public class Banco {
 
                 case 4:
                     System.out.println("\n\nOpcao escolhida: \n\t4- Atualizar registro");
+
+                    int update = 0;
+
+                    do {
+                        int idUpdate, exists = 0;
+                        do {
+                            System.out.println("\nDigite o ID da conta que deseja atualizar: ");
+                            idUpdate = sc.nextInt();
+
+                            for (int i = 0; i < account.size(); i++) {
+                                if (account.get(i).getIdconta() == idUpdate) {
+                                    exists++;
+                                    break;
+                                }
+                            }
+
+                            if (exists == 0) {
+                                System.out.println("\nConta nao existe!");
+                            } else {
+                                break;
+                            }
+                        } while (exists == 0);
+
+                    } while (update != 0);
+
+                    // -------- loop para atualizar a conta de acordo com o ID --------
+                    for (int j = 0; j < account.size(); j++) {
+                        System.out.print("Digite o Nome da Pessoa:");
+                        account.get(j).setNomePessoa(sc.next());
+
+                        // -------- loop para adicionar varios emails --------
+                        do {
+                            int arroba = 0, ponto = 0; // variavel para verificar se o email tem @
+                            String temp = "";
+
+                            // -------- loop para verificar se o email tem @ --------
+                            do {
+                                System.out.print("Digite o Email:");
+                                temp = sc.next(); // coloca o email em uma variavel temporaria
+
+                                for (int i = 0; i < temp.length(); i++) {
+                                    if (temp.charAt(i) == '@') {
+                                        arroba++;
+                                    } else if (temp.charAt(i) == '.' && i > temp.indexOf("@")) {
+                                        ponto++;
+                                    }
+                                }
+
+                                if (arroba == 0 || ponto == 0) {
+                                    System.out.println("Email invalido!");
+                                } else {
+                                    account.get(j).getEmail().add(temp);
+                                }
+
+                            } while (arroba == 0 || ponto == 0);
+
+                            System.out.println("Deseja adicionar um novo email? (1 - sim / 2 - não)");
+                            answer = sc.nextInt();
+
+                        } while (answer == 1);
+
+                        // -------- loop para verificar se o username é repetido --------
+                        int repeat2 = 0; // variavel para verificar se é repetido
+                        do {
+                            String tmp = "";
+                            System.out.print("Digite o username:");
+                            tmp = sc.next();
+
+                            for (int i = 0; i < account.size(); i++) {
+                                if (account.get(i).getNomeUsuario().contains(tmp)) {
+                                    repeat2++;
+                                } else {
+                                    repeat2 = 0;
+                                }
+                            }
+
+                            if (repeat2 != 0) {
+                                System.out.println("Usuario invalido! Esse username ja existe. Escolha outro!");
+                            } else {
+                                account.get(j).setNomeUsuario(tmp);
+                            }
+
+                        } while (repeat2 != 0);
+
+                        System.out.print("Digite a Senha:");
+                        account.get(j).setSenha(sc.next());
+
+                        // ------ loop para verificar se o CPF é valido ------
+                        do {
+                            System.out.print("Digite o Cpf:");
+                            account.get(j).setCpf(sc.next());
+                            if (account.get(j).getCpf().length() != 11) {
+                                System.out.println("CPF inválido!");
+                            }
+
+                        } while (account.get(j).getCpf().length() != 11);
+
+                        System.out.print("Digite a cidade:");
+                        account.get(j).setCidade(sc.next());
+
+                        System.out.print("Digite o saldo da conta: R$");
+                        account.get(j).setSaldoConta(sc.nextFloat()); // saldo da conta
+
+                        account.get(j).setTransferenciasRealizadas(0); // Por uma nova conta não existe transferências
+
+                        saida.write("(" + account.get(j).getIdconta() + ") " + account.get(j).getNomePessoa() + " " + account.get(j).getEmail() + " "
+                                + account.get(j).getNomeUsuario() + " " + account.get(j).getSenha() + " " + account.get(j).getCpf() + " "
+                                + account.get(j).getCidade()
+                                + " " + account.get(j).getTransferenciasRealizadas() + " " + account.get(j).getSaldoConta() + "\n");
+                    }
+
+                    System.out.println("\nSua conta foi atualizada com sucesso!");
                     break;
 
                 case 5:
