@@ -1,4 +1,5 @@
 
+
 /************************************************************
  * AEDS3 - TP01 
  * 
@@ -278,6 +279,17 @@ public class Banco {
 
                 case 2:
                     System.out.println("\n\nOpcao escolhida: \n\t 2- Realizar transferencia");
+                    System.out.println("\nDigite a conta:");
+                    String conta1 = sc.next();
+                    System.out.println("\nDigite a conta para qual deseja transferir: ");
+                    String conta2 = sc.next();
+                    System.out.println("\nDigite o valor a ser transferido: ");
+                    float valorTrans = sc.nextFloat();
+
+                    /*for(int i = 0; i < account.size(); i++){
+
+                    }*/
+
                     break;
 
                 case 3:
@@ -433,10 +445,34 @@ public class Banco {
 
                 case 5:
                     System.out.println("\n\nOpcao escolhida: \n\t5- Deletar registro");
+                    System.out.println("\nDigite o usuario da conta que deseja excluir: ");
+                    String auxAccount = sc.next(); //le o usuario que se quer deletar
+                    for(int i = 0; i < account.size(); i++){ //loop para verificar se o usuario na posicao i se iguala ao usuario que se deseja deletar
+                        if(account.get(i).getNomeUsuario().equals(auxAccount)){
+                            account.remove(i);
+                        }
+                    }
+                    System.out.println("\nA conta foi deletada com sucesso!");
                     break;
 
                 case 6:
                     System.out.println("\n\nOpcao escolhida: \n\t6- Ordenar arquivo");
+                    int aux1 = 0;
+                    do{
+                        System.out.println("\n ----- Tipos de balanceamento --------");
+                        System.out.println("\t1- Intercalação Balanceada comum");
+                        System.out.println("\t2- Intercalação Balanceada com blocos de tamanho variável");
+                        System.out.println("\t3- Intercalação Balanceada com seleção por substituição");
+                        System.out.println("\t4- Intercalação usando n+1 arquivos");
+                        System.out.println("\t5- Intercalação Polifásica");
+                        System.out.println("\t6- Ordenar arquivo");
+                        System.out.println("------------------------------------\n");
+
+                        System.out.println("\nDigite o metodo de balanceamneto: ");
+                    }while(aux1 == 1);
+                       
+
+                    
                     break;
 
                 default:
