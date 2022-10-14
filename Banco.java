@@ -1,15 +1,15 @@
 
-
 /************************************************************
  * AEDS3 - TP01 
  * 
  * Integrantes: Bárbara Luciano e Luisa Nogueira
  * 
 ************************************************************/
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 
 class Conta {
 
@@ -141,19 +141,96 @@ class Conta {
 
     // -----------------------
 
+    // ------- dados em bytes -------
+
+    public byte[] toByteArray() throws Exception {
+        ByteArrayOutputStream put = new ByteArrayOutputStream();
+        DataOutputStream data = new DataOutputStream(put);
+
+        // --- escreve os dados ---
+        data.writeInt(getIdconta());
+        data.writeUTF(getNomePessoa());
+
+        // --- escreve todos os emails ---
+        for (int i = 0; i < getEmail().size(); i++) {
+            data.writeUTF(getEmail().get(i));
+        }
+
+        data.writeUTF(getNomeUsuario());
+        data.writeUTF(getSenha());
+        data.writeUTF(getCpf());
+        data.writeUTF(getCidade());
+        data.writeInt(getTransferenciasRealizadas());
+        data.writeFloat(getSaldoConta());
+
+        put.close(); // fecha o fluxo de dados
+        data.close(); // fecha o fluxo de dados
+
+        return put.toByteArray(); // retorna os dados em bytes
+
+    }
+
+    // -----------------------
+
     // ---------------------------------------
 }
 
 public class Banco {
 
+    // --------------- CREATE ---------------
+    public static boolean create(RandomAccessFile arq, Conta conta) throws Exception {
+        boolean resp = false;
+
+        try {
+            arq.seek(arq.length()); // Ponteiro vai para o final do arquivo
+            arq.writeByte(0); // Lápide 
+            arq.writeInt(conta.toByteArray().length);// Escreve os dados em bytes
+
+            arq.writeInt(conta.getIdconta());
+            arq.writeUTF(conta.getNomePessoa());
+            
+            // --- escreve todos os emails ---
+            for (int i = 0; i < conta.getEmail().size(); i++) {
+                arq.writeUTF(conta.getEmail().get(i));
+            }
+
+            arq.writeUTF(conta.getNomeUsuario());
+            arq.writeUTF(conta.getSenha());
+            arq.writeUTF(conta.getCpf());
+            arq.writeUTF(conta.getCidade());
+            arq.writeInt(conta.getTransferenciasRealizadas());
+            arq.writeFloat(conta.getSaldoConta());
+
+            arq.seek(0); // Ponteiro vai para o início do arquivo
+            resp = true;
+        } catch (Exception e) {
+            throw new Exception("Erro ao inserir registro");
+        }
+        
+
+        return resp;
+    }
+        
+    // --------------------------------------
+
+    // --------------- READ ---------------
+
+    // --------------------------------------
+
+    // --------------- UPDATE ---------------
+
+    // --------------------------------------
+
+    // --------------- DELETE ---------------
+
+    // --------------------------------------
+
     public static void main(String[] args) throws Exception {
 
         Scanner sc = new Scanner(System.in);
         int resp = 0, id = 0, r = 0;
-        ArrayList<Conta> account = new ArrayList<Conta>();
 
-        FileWriter file = new FileWriter("arquivo.txt");
-        BufferedWriter saida = new BufferedWriter(file);
+        RandomAccessFile arq = new RandomAccessFile("contas.txt", "rw");
 
         // --------------- menu ---------------
 
@@ -231,8 +308,12 @@ public class Banco {
                         System.out.print("Digite o username:");
                         tmp = sc.next();
 
-                        for (int i = 0; i < account.size(); i++) {
-                            if (account.get(i).getNomeUsuario().contains(tmp)) {
+                        cont.setNomeUsuario(tmp);
+
+                        /*
+
+                        for (int i = 0; i < cont.; i++) {
+                            if (cont.getEmail().get(i).getNomeUsuario().contains(tmp)) {
                                 repeat++;
                             } else {
                                 repeat = 0;
@@ -244,6 +325,7 @@ public class Banco {
                         } else {
                             cont.setNomeUsuario(tmp);
                         }
+                        */
 
                     } while (repeat != 0);
 
@@ -268,14 +350,20 @@ public class Banco {
 
                     cont.setTransferenciasRealizadas(0); // Por uma nova conta não existe transferências
 
-                    saida.write("(" + cont.getIdconta() + ") " + cont.getNomePessoa() + " " + cont.getEmail() + " "
+                    arq.writeChars("(" + cont.getIdconta() + ") " + cont.getNomePessoa() + " " + cont.getEmail() + " "
                             + cont.getNomeUsuario() + " " + cont.getSenha() + " " + cont.getCpf() + " "
                             + cont.getCidade()
                             + " " + cont.getTransferenciasRealizadas() + " " + cont.getSaldoConta() + "\n");
 
-                    account.add(cont);
-                    System.out.println("\nSua conta foi cadastrada com sucesso!");
+                    if (create(arq, cont)) {
+                        System.out.println("Conta criada com sucesso!");
+                    } else {
+                        System.out.println("Erro ao criar conta!");
+                    }
+                    
                     break;
+
+                    /* 
 
                 case 2:
                     System.out.println("\n\nOpcao escolhida: \n\t 2- Realizar transferencia");
@@ -286,9 +374,7 @@ public class Banco {
                     System.out.println("\nDigite o valor a ser transferido: ");
                     float valorTrans = sc.nextFloat();
 
-                    /*for(int i = 0; i < account.size(); i++){
-
-                    }*/
+                    
 
                     break;
 
@@ -434,10 +520,13 @@ public class Banco {
 
                         account.get(j).setTransferenciasRealizadas(0); // Por uma nova conta não existe transferências
 
-                        saida.write("(" + account.get(j).getIdconta() + ") " + account.get(j).getNomePessoa() + " " + account.get(j).getEmail() + " "
-                                + account.get(j).getNomeUsuario() + " " + account.get(j).getSenha() + " " + account.get(j).getCpf() + " "
+                        arq.writeChars("(" + account.get(j).getIdconta() + ") " + account.get(j).getNomePessoa() + " "
+                                + account.get(j).getEmail() + " "
+                                + account.get(j).getNomeUsuario() + " " + account.get(j).getSenha() + " "
+                                + account.get(j).getCpf() + " "
                                 + account.get(j).getCidade()
-                                + " " + account.get(j).getTransferenciasRealizadas() + " " + account.get(j).getSaldoConta() + "\n");
+                                + " " + account.get(j).getTransferenciasRealizadas() + " "
+                                + account.get(j).getSaldoConta() + "\n");
                     }
 
                     System.out.println("\nSua conta foi atualizada com sucesso!");
@@ -446,9 +535,10 @@ public class Banco {
                 case 5:
                     System.out.println("\n\nOpcao escolhida: \n\t5- Deletar registro");
                     System.out.println("\nDigite o usuario da conta que deseja excluir: ");
-                    String auxAccount = sc.next(); //le o usuario que se quer deletar
-                    for(int i = 0; i < account.size(); i++){ //loop para verificar se o usuario na posicao i se iguala ao usuario que se deseja deletar
-                        if(account.get(i).getNomeUsuario().equals(auxAccount)){
+                    String auxAccount = sc.next(); // le o usuario que se quer deletar
+                    for (int i = 0; i < account.size(); i++) { // loop para verificar se o usuario na posicao i se
+                                                               // iguala ao usuario que se deseja deletar
+                        if (account.get(i).getNomeUsuario().equals(auxAccount)) {
                             account.remove(i);
                         }
                     }
@@ -458,7 +548,7 @@ public class Banco {
                 case 6:
                     System.out.println("\n\nOpcao escolhida: \n\t6- Ordenar arquivo");
                     int aux1 = 0;
-                    do{
+                    do {
                         System.out.println("\n ----- Tipos de balanceamento --------");
                         System.out.println("\t1- Intercalação Balanceada comum");
                         System.out.println("\t2- Intercalação Balanceada com blocos de tamanho variável");
@@ -469,11 +559,11 @@ public class Banco {
                         System.out.println("------------------------------------\n");
 
                         System.out.println("\nDigite o metodo de balanceamneto: ");
-                    }while(aux1 == 1);
-                       
+                    } while (aux1 == 1);
 
-                    
                     break;
+
+                    */
 
                 default:
                     System.out.print("\n\nOpcao invalida!");
@@ -500,7 +590,7 @@ public class Banco {
         } while (r == 1);
 
         // ------------------------------------
-        saida.close();
+        arq.close();
     }
 
 }
