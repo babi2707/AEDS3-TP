@@ -215,6 +215,81 @@ public class Banco {
 
     // --------------- READ ---------------
 
+    public static Conta readId(RandomAccessFile arq, int pesquisa) throws Exception{
+
+        try{
+            Conta conta = new Conta();
+            arq.seek(4); // Ponteiro no inicio do arquivo
+
+            while(arq.getFilePointer() < arq.length()){ // Até o ponteiro chegar ao final do arquivo
+                if(arq.readByte() == 0){
+                    int tam = arq.readInt();
+
+                    conta.setIdConta(arq.readInt());
+
+                    if(conta.getIdconta() == pesquisa){ // Caso o id da conta seja igual ao id procurado
+                        conta.setNomePessoa(arq.readUTF());
+                        //conta.setEmail(arq.readUTF()); - arrumar o email
+                        conta.setNomeUsuario(arq.readUTF());
+                        conta.setSenha(arq.readUTF());
+                        conta.setCpf(arq.readUTF());
+                        conta.setCidade(arq.readUTF());
+                        conta.setTransferenciasRealizadas(arq.readInt());
+                        conta.setSaldoConta(arq.readFloat());
+
+                        return conta;
+                    }else{
+                        arq.skipBytes(tam - 4); //Pula o restante do registro
+                    }
+                }else{
+                    arq.skipBytes(arq.readInt()); // Pula o registro todo
+                }
+            }
+
+            return null;
+
+        }catch(Exception e){
+            System.out.println("Não foi possível ler o registro!");
+            return null;
+        }
+    } 
+
+    public static Conta readUser(RandomAccessFile arq, String pesquisa){
+        try{
+            Conta conta = null;
+            boolean searchUser = false;
+
+            arq.seek(4); // Ponteiro no inicio do arquivo
+            while(arq.getFilePointer() < arq.length() && !searchUser){
+                if(arq.readByte() == 0){
+                    conta = new Conta();
+                    arq.readInt();
+
+                    conta.setIdConta((arq.readInt());
+                    conta.setNomePessoa(arq.readUTF());
+                    //conta.setEmail(null); - consertar o email
+                    conta.setNomePessoa(arq.readUTF());
+                    conta.setSenha(arq.readUTF());
+                    conta.setCpf(arq.readUTF());
+                    conta.setCidade(arq.readUTF());
+                    conta.setTransferenciasRealizadas(arq.readInt());
+                    conta.setSaldoConta(arq.readFloat());
+
+                    if(conta.getNomeUsuario().equals(pesquisa)){
+                        searchUser = true;
+                    }
+                }else{ // arquivo ecluido
+                    arq.skipBytes(arq.readInt());
+                }
+            }
+
+            return conta;
+        }catch(Exception e){
+            System.out.println("Não foi possivel ler o registro!");
+            return null;
+        }
+    }
+
     // --------------------------------------
 
     // --------------- UPDATE ---------------
@@ -222,7 +297,32 @@ public class Banco {
     // --------------------------------------
 
     // --------------- DELETE ---------------
+    public static boolean delete(RandomAccessFile arq, Conta conta){
+        try{
+            arq.seek(4); // Ponteiro no inico do arquivo
+            while(arq.getFilePointer() < arq.length()){
+                if(arq.readByte() == 0){
+                    int tam = arq.readInt();
+                    int id = arq.readInt();
 
+                    if(id == conta.getIdconta()){ // Compara os ids, se iguais a conta sera excluida
+                        arq.seek(arq.getFilePointer() - 9); // Ponteiro volta pro inicio do arquivo
+                        arq.writeByte(1); 
+                        return true;
+                    }else{
+                        arq.skipBytes(tam - 4); // Pula o resto do registro
+                    }
+                }else{
+                    arq.skipBytes(arq.readInt()); // Pula todo o registro
+                }
+            }
+
+            return false;
+        }catch(Exception e){
+            System.out.println("Arquivo nao existe ou nao pode ser excluido!");
+            return false;
+        }
+    }
     // --------------------------------------
 
     public static void main(String[] args) throws Exception {
