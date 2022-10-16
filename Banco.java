@@ -229,7 +229,13 @@ public class Banco {
 
                     if(conta.getIdconta() == pesquisa){ // Caso o id da conta seja igual ao id procurado
                         conta.setNomePessoa(arq.readUTF());
-                        //conta.setEmail(arq.readUTF()); - arrumar o email
+
+                        // --- ler todos os emails ---
+                        for (int i = 0; i < conta.getEmail().size(); i++) {
+                            conta.setEmail((arq.readUTF().get(i)));
+                        }
+
+        
                         conta.setNomeUsuario(arq.readUTF());
                         conta.setSenha(arq.readUTF());
                         conta.setCpf(arq.readUTF());
@@ -265,9 +271,14 @@ public class Banco {
                     conta = new Conta();
                     arq.readInt();
 
-                    conta.setIdConta((arq.readInt());
+                    conta.setIdConta(arq.readInt());
                     conta.setNomePessoa(arq.readUTF());
-                    //conta.setEmail(null); - consertar o email
+
+                    // --- ler todos os emails ---
+                    for (int i = 0; i < conta.getEmail().size(); i++) {
+                        conta.setEmail((arq.readUTF().get(i)));
+                    }
+
                     conta.setNomePessoa(arq.readUTF());
                     conta.setSenha(arq.readUTF());
                     conta.setCpf(arq.readUTF());
@@ -293,6 +304,52 @@ public class Banco {
     // --------------------------------------
 
     // --------------- UPDATE ---------------
+
+    public static boolean update(RandomAccessFile arq, Conta conta){
+        try{
+
+            arq.seek(4); //Ponteiro no inicio do arquivo
+            while(arq.getFilePointer() < arq.length()){ // Enquanto nao chegar no fim do arquivo
+                if(arq.readByte() == 0){
+                    int tam = arq.readInt();
+
+                    if(arq.readInt() == conta.getIdconta()){ // Verifica se o ID da conta é igual ao da conta a ser atualizada
+                        if(tam >= conta.toByteArray().length){ // verifica o tamanho dos registros, se iguais encaixa no mesmo registro
+                            arq.writeUTF(conta.getNomePessoa());
+
+                            // --- atualiza todos os emails ---
+                            for (int i = 0; i < conta.getEmail().size(); i++) {
+                                arq.writeUTF(conta.getEmail().get(i));
+                            }
+                            
+                            arq.writeUTF(conta.getNomeUsuario());
+                            arq.writeUTF(conta.getSenha());
+                            arq.writeUTF(conta.getCpf());
+                            arq.writeUTF(conta.getCidade());
+                            arq.writeInt(conta.getTransferenciasRealizadas());
+                            arq.writeFloat(conta.getSaldoConta());
+
+                            return true;
+
+                        }else{// se o tam do registro for menor deve-se criar um novo registro
+                            arq.seek(arq.getFilePointer() - 9 ); //Ponteiro no inicio do arq
+                            arq.writeByte(1);
+                            return create(arq, conta); //chama o metodo para criar outro registro
+                        }
+                    }else{
+                        arq.skipBytes(tam - 4); 
+                    }
+                } else{
+                    arq.skipBytes(arq.readInt());
+                }
+            }
+
+            return true;
+        }catch(Exception e){
+            System.out.println("Não foi possivel atualizar o registro!");
+            return false;
+        }
+    }
 
     // --------------------------------------
 
