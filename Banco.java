@@ -9,7 +9,9 @@
 import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.*;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 class Conta {
@@ -31,7 +33,7 @@ class Conta {
     // --------------- construtores ---------------
 
     public Conta() {
-        this.idConta = 0;
+        this.idConta = -1;
         this.nomePessoa = "";
         this.email = new ArrayList<>();
         this.nomeUsuario = "";
@@ -149,20 +151,20 @@ class Conta {
         DataOutputStream data = new DataOutputStream(put);
 
         // --- escreve os dados ---
-        data.writeInt(getIdconta());
-        data.writeUTF(getNomePessoa());
+        data.writeInt(this.getIdconta());
+        data.writeUTF(this.getNomePessoa());
 
         // --- escreve todos os emails ---
-        for (int i = 0; i < getEmail().size(); i++) {
-            data.writeUTF(getEmail().get(i));
+        for (int i = 0; i < this.getEmail().size(); i++) {
+            data.writeUTF(this.getEmail().get(i));
         }
 
-        data.writeUTF(getNomeUsuario());
-        data.writeUTF(getSenha());
-        data.writeUTF(getCpf());
-        data.writeUTF(getCidade());
-        data.writeInt(getTransferenciasRealizadas());
-        data.writeFloat(getSaldoConta());
+        data.writeUTF(this.getNomeUsuario());
+        data.writeUTF(this.getSenha());
+        data.writeUTF(this.getCpf());
+        data.writeUTF(this.getCidade());
+        data.writeInt(this.getTransferenciasRealizadas());
+        data.writeFloat(this.getSaldoConta());
 
         put.close(); // fecha o fluxo de dados
         data.close(); // fecha o fluxo de dados
@@ -171,12 +173,21 @@ class Conta {
 
     }
 
-    // -----------------------
+    public void toStringArray(byte[] by) throws Exception {
+        ByteArrayInputStream b = new ByteArrayInputStream(by);
+        DataInputStream data = new DataInputStream(b);
+
+        this.idConta = data.readInt();
+        this.nomePessoa = data.readUTF();
+    }
+    // ------------------------------
 
     // ---------------------------------------
 }
 
 public class Banco {
+
+    static int lastID; // guarda o valor do ultimo ID
 
     // --------------- CREATE ---------------
     public static boolean create(RandomAccessFile arq, Conta conta) throws Exception {
@@ -203,6 +214,9 @@ public class Banco {
             arq.writeFloat(conta.getSaldoConta());
 
             arq.seek(0); // Ponteiro vai para o início do arquivo
+
+            arq.writeInt(lastID); // atualiza o ultimo ID 
+
             resp = true;
         } catch (Exception e) {
             throw new Exception("Erro ao inserir registro");
@@ -426,6 +440,12 @@ public class Banco {
 
         RandomAccessFile arq = new RandomAccessFile("contas.txt", "rw");
 
+        if (arq.length() == 0) { arq.writeInt(0); }
+        
+        arq.seek(0); // ponteiro vai para primeira posicao
+
+        lastID = arq.readInt(); // ler o ultimo ID
+
         // --------------- menu ---------------
 
         do {
@@ -458,7 +478,7 @@ public class Banco {
                     int answer = 0;
                     System.out.println("\n\nOpcao escolhida: \n\t1- Criar conta");
 
-                    cont.setIdConta(id++);
+                    cont.setIdConta(++lastID);
                     System.out.println("Seu ID é: " + cont.getIdconta() + "\n\n");
 
                     System.out.print("Digite o Nome da Pessoa:");
@@ -560,6 +580,7 @@ public class Banco {
 
                 case 2:
                     System.out.println("\n\nOpcao escolhida: \n\t 2- Realizar transferencia");
+
                     System.out.println("\nDigite o ID da primeira conta:");
                     int id1 = sc.nextInt();
 
@@ -568,6 +589,13 @@ public class Banco {
 
                     System.out.println("\nDigite o valor a ser transferido: ");
                     float value = sc.nextFloat();
+
+                    System.out.println(id1);
+                    System.out.println(id2);
+
+                    for (int i = 0; i < id; i++) {
+                        System.out.println(cont.getIdconta());
+                    }
 
                     System.out.println(transfer(arq, id1, id2, value) ? "Transferencia realizada com suceesso!" : "Nao foi possivel realizar a transferencia!");
 
