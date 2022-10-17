@@ -1,5 +1,4 @@
 
-
 /************************************************************
  * AEDS3 - TP01 
  * 
@@ -394,7 +393,8 @@ public class Banco {
     public static void main(String[] args) throws Exception {
 
         Scanner sc = new Scanner(System.in);
-        int resp = 0, id = 0, r = 0;
+        int resp = 0, id = 0, r = 0, linhas = 0;
+        Conta cont = new Conta();
 
         RandomAccessFile arq = new RandomAccessFile("contas.txt", "rw");
 
@@ -426,7 +426,7 @@ public class Banco {
 
             switch (resp) {
                 case 1:
-                    Conta cont = new Conta();
+                    cont = new Conta();
                     int answer = 0;
                     System.out.println("\n\nOpcao escolhida: \n\t1- Criar conta");
 
@@ -528,176 +528,179 @@ public class Banco {
 
                     break;
 
+                
+                case 2:
+                System.out.println("\n\nOpcao escolhida: \n\t 2- Realizar transferencia");
+                System.out.println("\nDigite a conta:");
+                String conta1 = sc.next();
+                System.out.println("\nDigite a conta para qual deseja transferir: ");
+                String conta2 = sc.next();
+                System.out.println("\nDigite o valor a ser transferido: ");
+                float valorTrans = sc.nextFloat();
+                
+                break;
+                
+                case 3:
+                int numID = 0, count = 0;
+
+                System.out.println("\n\nOpcao escolhida: \n\t3- Ler registro (ID)\n");
+
+                // -------- pegar a escolha do usuario --------
+                System.out.print("Digite o numero do ID que deseja ler: ");
+                numID = sc.nextInt();
+
+                
+                if (cont.getIdconta() == numID) {
+                System.out.println("\n\nID: " + cont.getIdconta());
+                System.out.println("Nome da pessoa: " + cont.getNomePessoa());
+                System.out.println("Email: " + cont.getEmail());
+                System.out.println("Username: " + cont.getNomeUsuario());
+                System.out.println("Senha: " + cont.getSenha());
+                System.out.println("CPF: " + cont.getCpf());
+                System.out.println("Cidade: " + cont.getCidade());
+                System.out.println("Saldo da conta: " + cont.getSaldoConta());
+                System.out.println(
+                "Transferências já realizadas: " +
+                cont.getTransferenciasRealizadas());
+                } else {
+                count++;
+                }
+                
+                if (count == id) {
+                System.out.println("\nNumero ID não encontrado!");
+                } else {
+                System.out.println("\nArquivo de registros lido com sucesso!");
+                }
+                break;
+
                 /*
-                 * case 2:
-                 * System.out.println("\n\nOpcao escolhida: \n\t 2- Realizar transferencia");
-                 * System.out.println("\nDigite a conta:");
-                 * String conta1 = sc.next();
-                 * System.out.println("\nDigite a conta para qual deseja transferir: ");
-                 * String conta2 = sc.next();
-                 * System.out.println("\nDigite o valor a ser transferido: ");
-                 * float valorTrans = sc.nextFloat();
-                 * 
-                 * break;
-                 * case 3:
-                 * int numID = 0, count = 0;
-                 * System.out.println("\n\nOpcao escolhida: \n\t3- Ler registro (ID)\n");
-                 * // -------- pegar a escolha do usuario --------
-                 * System.out.print("Digite o numero do ID que deseja ler: ");
-                 * numID = sc.nextInt();
-                 * // ------ loop para ler todas as contas que estão gravadas no arquivo ------
-                 * for (int i = 0; i < account.size(); i++) { // --- enquanto i não for do
-                 * tamanho do arquivo, continua
-                 * // o loop
-                 * if (account.get(i).getIdconta() == numID) {
-                 * System.out.println("\n\nID: " + account.get(i).getIdconta());
-                 * System.out.println("Nome da pessoa: " + account.get(i).getNomePessoa());
-                 * System.out.println("Email: " + account.get(i).getEmail());
-                 * System.out.println("Username: " + account.get(i).getNomeUsuario());
-                 * System.out.println("Senha: " + account.get(i).getSenha());
-                 * System.out.println("CPF: " + account.get(i).getCpf());
-                 * System.out.println("Cidade: " + account.get(i).getCidade());
-                 * System.out.println("Saldo da conta: " + account.get(i).getSaldoConta());
-                 * System.out.println(
-                 * "Transferências já realizadas: " +
-                 * account.get(i).getTransferenciasRealizadas());
-                 * } else {
-                 * count++;
-                 * }
-                 * }
-                 * if (count == account.size()) {
-                 * System.out.println("\nNumero ID não encontrado!");
-                 * } else {
-                 * System.out.println("\nArquivo de registros lido com sucesso!");
-                 * }
-                 * break;
-                 * case 4:
-                 * System.out.println("\n\nOpcao escolhida: \n\t4- Atualizar registro");
-                 * int update = 0;
-                 * do {
-                 * int idUpdate, exists = 0;
-                 * do {
-                 * System.out.println("\nDigite o ID da conta que deseja atualizar: ");
-                 * idUpdate = sc.nextInt();
-                 * for (int i = 0; i < account.size(); i++) {
-                 * if (account.get(i).getIdconta() == idUpdate) {
-                 * exists++;
-                 * break;
-                 * }
-                 * }
-                 * if (exists == 0) {
-                 * System.out.println("\nConta nao existe!");
-                 * } else {
-                 * break;
-                 * }
-                 * } while (exists == 0);
-                 * } while (update != 0);
-                 * // -------- loop para atualizar a conta de acordo com o ID --------
-                 * for (int j = 0; j < account.size(); j++) {
-                 * System.out.print("Digite o Nome da Pessoa:");
-                 * account.get(j).setNomePessoa(sc.next());
-                 * // -------- loop para adicionar varios emails --------
-                 * do {
-                 * int arroba = 0, ponto = 0; // variavel para verificar se o email tem @
-                 * String temp = "";
-                 * // -------- loop para verificar se o email tem @ --------
-                 * do {
-                 * System.out.print("Digite o Email:");
-                 * temp = sc.next(); // coloca o email em uma variavel temporaria
-                 * for (int i = 0; i < temp.length(); i++) {
-                 * if (temp.charAt(i) == '@') {
-                 * arroba++;
-                 * } else if (temp.charAt(i) == '.' && i > temp.indexOf("@")) {
-                 * ponto++;
-                 * }
-                 * }
-                 * if (arroba == 0 || ponto == 0) {
-                 * System.out.println("Email invalido!");
-                 * } else {
-                 * account.get(j).getEmail().add(temp);
-                 * }
-                 * } while (arroba == 0 || ponto == 0);
-                 * System.out.println("Deseja adicionar um novo email? (1 - sim / 2 - não)");
-                 * answer = sc.nextInt();
-                 * } while (answer == 1);
-                 * // -------- loop para verificar se o username é repetido --------
-                 * int repeat2 = 0; // variavel para verificar se é repetido
-                 * do {
-                 * String tmp = "";
-                 * System.out.print("Digite o username:");
-                 * tmp = sc.next();
-                 * for (int i = 0; i < account.size(); i++) {
-                 * if (account.get(i).getNomeUsuario().contains(tmp)) {
-                 * repeat2++;
-                 * } else {
-                 * repeat2 = 0;
-                 * }
-                 * }
-                 * if (repeat2 != 0) {
-                 * System.out.
-                 * println("Usuario invalido! Esse username ja existe. Escolha outro!");
-                 * } else {
-                 * account.get(j).setNomeUsuario(tmp);
-                 * }
-                 * } while (repeat2 != 0);
-                 * System.out.print("Digite a Senha:");
-                 * account.get(j).setSenha(sc.next());
-                 * // ------ loop para verificar se o CPF é valido ------
-                 * do {
-                 * System.out.print("Digite o Cpf:");
-                 * account.get(j).setCpf(sc.next());
-                 * if (account.get(j).getCpf().length() != 11) {
-                 * System.out.println("CPF inválido!");
-                 * }
-                 * } while (account.get(j).getCpf().length() != 11);
-                 * System.out.print("Digite a cidade:");
-                 * account.get(j).setCidade(sc.next());
-                 * System.out.print("Digite o saldo da conta: R$");
-                 * account.get(j).setSaldoConta(sc.nextFloat()); // saldo da conta
-                 * account.get(j).setTransferenciasRealizadas(0); // Por uma nova conta não
-                 * existe transferências
-                 * arq.writeChars("(" + account.get(j).getIdconta() + ") " +
-                 * account.get(j).getNomePessoa() + " "
-                 * + account.get(j).getEmail() + " "
-                 * + account.get(j).getNomeUsuario() + " " + account.get(j).getSenha() + " "
-                 * + account.get(j).getCpf() + " "
-                 * + account.get(j).getCidade()
-                 * + " " + account.get(j).getTransferenciasRealizadas() + " "
-                 * + account.get(j).getSaldoConta() + "\n");
-                 * }
-                 * System.out.println("\nSua conta foi atualizada com sucesso!");
-                 * break;
-                 * case 5:
-                 * System.out.println("\n\nOpcao escolhida: \n\t5- Deletar registro");
-                 * System.out.println("\nDigite o usuario da conta que deseja excluir: ");
-                 * String auxAccount = sc.next(); // le o usuario que se quer deletar
-                 * for (int i = 0; i < account.size(); i++) { // loop para verificar se o
-                 * usuario na posicao i se
-                 * // iguala ao usuario que se deseja deletar
-                 * if (account.get(i).getNomeUsuario().equals(auxAccount)) {
-                 * account.remove(i);
-                 * }
-                 * }
-                 * System.out.println("\nA conta foi deletada com sucesso!");
-                 * break;
-                 * case 6:
-                 * System.out.println("\n\nOpcao escolhida: \n\t6- Ordenar arquivo");
-                 * int aux1 = 0;
-                 * do {
-                 * System.out.println("\n ----- Tipos de balanceamento --------");
-                 * System.out.println("\t1- Intercalação Balanceada comum");
-                 * System.out.
-                 * println("\t2- Intercalação Balanceada com blocos de tamanho variável");
-                 * System.out.
-                 * println("\t3- Intercalação Balanceada com seleção por substituição");
-                 * System.out.println("\t4- Intercalação usando n+1 arquivos");
-                 * System.out.println("\t5- Intercalação Polifásica");
-                 * System.out.println("\t6- Ordenar arquivo");
-                 * System.out.println("------------------------------------\n");
-                 * System.out.println("\nDigite o metodo de balanceamneto: ");
-                 * } while (aux1 == 1);
-                 * break;
-                 */
+                case 4:
+                System.out.println("\n\nOpcao escolhida: \n\t4- Atualizar registro");
+                int update = 0;
+                do {
+                int idUpdate, exists = 0;
+                do {
+                System.out.println("\nDigite o ID da conta que deseja atualizar: ");
+                idUpdate = sc.nextInt();
+                for (int i = 0; i < account.size(); i++) {
+                if (account.get(i).getIdconta() == idUpdate) {
+                exists++;
+                break;
+                }
+                }
+                if (exists == 0) {
+                System.out.println("\nConta nao existe!");
+                } else {
+                break;
+                }
+                } while (exists == 0);
+                } while (update != 0);
+                // -------- loop para atualizar a conta de acordo com o ID --------
+                for (int j = 0; j < account.size(); j++) {
+                System.out.print("Digite o Nome da Pessoa:");
+                account.get(j).setNomePessoa(sc.next());
+                // -------- loop para adicionar varios emails --------
+                do {
+                int arroba = 0, ponto = 0; // variavel para verificar se o email tem @
+                String temp = "";
+                // -------- loop para verificar se o email tem @ --------
+                do {
+                System.out.print("Digite o Email:");
+                temp = sc.next(); // coloca o email em uma variavel temporaria
+                for (int i = 0; i < temp.length(); i++) {
+                if (temp.charAt(i) == '@') {
+                arroba++;
+                } else if (temp.charAt(i) == '.' && i > temp.indexOf("@")) {
+                ponto++;
+                }
+                }
+                if (arroba == 0 || ponto == 0) {
+                System.out.println("Email invalido!");
+                } else {
+                account.get(j).getEmail().add(temp);
+                }
+                } while (arroba == 0 || ponto == 0);
+                System.out.println("Deseja adicionar um novo email? (1 - sim / 2 - não)");
+                answer = sc.nextInt();
+                } while (answer == 1);
+                // -------- loop para verificar se o username é repetido --------
+                int repeat2 = 0; // variavel para verificar se é repetido
+                do {
+                String tmp = "";
+                System.out.print("Digite o username:");
+                tmp = sc.next();
+                for (int i = 0; i < account.size(); i++) {
+                if (account.get(i).getNomeUsuario().contains(tmp)) {
+                repeat2++;
+                } else {
+                repeat2 = 0;
+                }
+                }
+                if (repeat2 != 0) {
+                System.out.
+                println("Usuario invalido! Esse username ja existe. Escolha outro!");
+                } else {
+                account.get(j).setNomeUsuario(tmp);
+                }
+                } while (repeat2 != 0);
+                System.out.print("Digite a Senha:");
+                account.get(j).setSenha(sc.next());
+                // ------ loop para verificar se o CPF é valido ------
+                do {
+                System.out.print("Digite o Cpf:");
+                account.get(j).setCpf(sc.next());
+                if (account.get(j).getCpf().length() != 11) {
+                System.out.println("CPF inválido!");
+                }
+                } while (account.get(j).getCpf().length() != 11);
+                System.out.print("Digite a cidade:");
+                account.get(j).setCidade(sc.next());
+                System.out.print("Digite o saldo da conta: R$");
+                account.get(j).setSaldoConta(sc.nextFloat()); // saldo da conta
+                account.get(j).setTransferenciasRealizadas(0); // Por uma nova conta não
+                existe transferências
+                arq.writeChars("(" + account.get(j).getIdconta() + ") " +
+                account.get(j).getNomePessoa() + " "
+                + account.get(j).getEmail() + " "
+                + account.get(j).getNomeUsuario() + " " + account.get(j).getSenha() + " "
+                + account.get(j).getCpf() + " "
+                + account.get(j).getCidade()
+                + " " + account.get(j).getTransferenciasRealizadas() + " "
+                + account.get(j).getSaldoConta() + "\n");
+                }
+                System.out.println("\nSua conta foi atualizada com sucesso!");
+                break;
+                case 5:
+                System.out.println("\n\nOpcao escolhida: \n\t5- Deletar registro");
+                System.out.println("\nDigite o usuario da conta que deseja excluir: ");
+                String auxAccount = sc.next(); // le o usuario que se quer deletar
+                for (int i = 0; i < account.size(); i++) { // loop para verificar se o
+                usuario na posicao i se
+                // iguala ao usuario que se deseja deletar
+                if (account.get(i).getNomeUsuario().equals(auxAccount)) {
+                account.remove(i);
+                }
+                }
+                System.out.println("\nA conta foi deletada com sucesso!");
+                break;
+                case 6:
+                System.out.println("\n\nOpcao escolhida: \n\t6- Ordenar arquivo");
+                int aux1 = 0;
+                do {
+                System.out.println("\n ----- Tipos de balanceamento --------");
+                System.out.println("\t1- Intercalação Balanceada comum");
+                System.out.
+                println("\t2- Intercalação Balanceada com blocos de tamanho variável");
+                System.out.
+                println("\t3- Intercalação Balanceada com seleção por substituição");
+                System.out.println("\t4- Intercalação usando n+1 arquivos");
+                System.out.println("\t5- Intercalação Polifásica");
+                System.out.println("\t6- Ordenar arquivo");
+                System.out.println("------------------------------------\n");
+                System.out.println("\nDigite o metodo de balanceamneto: ");
+                } while (aux1 == 1);
+                break;
+                */
 
                 default:
                     System.out.print("\n\nOpcao invalida!");
