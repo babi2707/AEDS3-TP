@@ -1,4 +1,3 @@
-
 /************************************************************
  * AEDS3 - TP01 
  * 
@@ -8,7 +7,9 @@
 import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.*;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 class Conta {
@@ -17,7 +18,8 @@ class Conta {
 
     private int idConta;
     private String nomePessoa;
-    private ArrayList<String> email;
+    private int qtd;
+    private String[] email;
     private String nomeUsuario;
     private String senha;
     private String cpf;
@@ -32,7 +34,8 @@ class Conta {
     public Conta() {
         this.idConta = 0;
         this.nomePessoa = "";
-        this.email = new ArrayList<>();
+        this.qtd = 0;
+        this.email = new String[qtd];
         this.nomeUsuario = "";
         this.senha = "";
         this.cpf = "";
@@ -41,10 +44,11 @@ class Conta {
         this.saldoConta = 0;
     }
 
-    public Conta(int idConta, String nomePessoa, ArrayList<String> email, String nomeUsuario, String senha, String cpf,
+    public Conta(int idConta, String nomePessoa, int qtd, String[] email, String nomeUsuario, String senha, String cpf,
             String cidade, int transferenciasRealizadas, float saldoConta) {
         setIdConta(idConta);
         setNomePessoa(nomePessoa);
+        setQtd(qtd);
         setEmail(email);
         setNomeUsuario(nomeUsuario);
         setSenha(senha);
@@ -74,11 +78,19 @@ class Conta {
         return this.nomePessoa;
     }
 
-    public void setEmail(ArrayList<String> email) {
+    public void setQtd(int qtd) {
+        this.qtd = qtd;
+    }
+
+    public int getQtd() {
+        return qtd;
+    }
+
+    public void setEmail(String[] email) {
         this.email = email;
     }
 
-    public ArrayList<String> getEmail() {
+    public String[] getEmail() {
         return this.email;
     }
 
@@ -148,20 +160,20 @@ class Conta {
         DataOutputStream data = new DataOutputStream(put);
 
         // --- escreve os dados ---
-        data.writeInt(getIdconta());
-        data.writeUTF(getNomePessoa());
+        data.writeInt(this.getIdconta());
+        data.writeUTF(this.getNomePessoa());
 
         // --- escreve todos os emails ---
-        for (int i = 0; i < getEmail().size(); i++) {
-            data.writeUTF(getEmail().get(i));
+        for (int i = 0; i < this.getQtd(); i++) {
+            data.writeUTF(this.getEmail()[i]);
         }
 
-        data.writeUTF(getNomeUsuario());
-        data.writeUTF(getSenha());
-        data.writeUTF(getCpf());
-        data.writeUTF(getCidade());
-        data.writeInt(getTransferenciasRealizadas());
-        data.writeFloat(getSaldoConta());
+        data.writeUTF(this.getNomeUsuario());
+        data.writeUTF(this.getSenha());
+        data.writeUTF(this.getCpf());
+        data.writeUTF(this.getCidade());
+        data.writeInt(this.getTransferenciasRealizadas());
+        data.writeFloat(this.getSaldoConta());
 
         put.close(); // fecha o fluxo de dados
         data.close(); // fecha o fluxo de dados
@@ -170,10 +182,28 @@ class Conta {
 
     }
 
-    // -----------------------
+    public void toStringArray(byte[] by) throws Exception {
+        ByteArrayInputStream b = new ByteArrayInputStream(by);
+        DataInputStream data = new DataInputStream(b);
+
+        this.idConta = data.readInt();
+        this.nomePessoa = data.readUTF();
+
+        for (int i = 0; i < this.getQtd(); i++) {
+            this.email[i] = data.readUTF();
+        }
+
+        this.nomeUsuario = data.readUTF();
+        this.senha = data.readUTF();
+        this.cpf = data.readUTF();
+        this.transferenciasRealizadas = data.readInt();
+        this.saldoConta = data.readFloat();
+    }
+    // ------------------------------
 
     // ---------------------------------------
 }
+
 // --------------------- CRUD -----------------------
 public class Banco {
 
@@ -190,8 +220,8 @@ public class Banco {
             arq.writeUTF(conta.getNomePessoa());
             
             // --- escreve todos os emails ---
-            for (int i = 0; i < conta.getEmail().size(); i++) {
-                arq.writeUTF(conta.getEmail().get(i));
+            for (int i = 0; i < conta.getQtd(); i++) {
+                arq.writeUTF(conta.getEmail()[i]);
             }
 
             arq.writeUTF(conta.getNomeUsuario());
@@ -232,11 +262,11 @@ public class Banco {
                         String[] emails = new String[1000]; // armazenar os emails
 
                         // --- ler todos os emails ---
-                        for (int i = 0; i < conta.getEmail().size(); i++) {
+                        for (int i = 0; i < conta.getQtd(); i++) {
                             emails[i] = arq.readUTF();
                         }
 
-                        conta.setEmail(new ArrayList<String>(Arrays.asList(emails))) ;// adiciona os emails no arraylist
+                        conta.setEmail(emails);// adiciona os emails
 
                         conta.setNomeUsuario(arq.readUTF());
                         conta.setSenha(arq.readUTF());
@@ -279,11 +309,11 @@ public class Banco {
                     String[] emails = new String[1000]; // armazenar os emails
 
                     // --- ler todos os emails ---
-                    for (int i = 0; i < conta.getEmail().size(); i++) {
+                    for (int i = 0; i < conta.getQtd(); i++) {
                         emails[i] = arq.readUTF();
                     }
 
-                    conta.setEmail(new ArrayList<String>(Arrays.asList(emails))); // adiciona os emails no arraylist
+                    conta.setEmail(emails); // adiciona os emails
 
                     conta.setNomePessoa(arq.readUTF());
                     conta.setSenha(arq.readUTF());
@@ -324,8 +354,8 @@ public class Banco {
                             arq.writeUTF(conta.getNomePessoa());
 
                             // --- atualiza todos os emails ---
-                            for (int i = 0; i < conta.getEmail().size(); i++) {
-                                arq.writeUTF(conta.getEmail().get(i));
+                            for (int i = 0; i < conta.getQtd(); i++) {
+                                arq.writeUTF(conta.getEmail()[i]);
                             }
                             
                             arq.writeUTF(conta.getNomeUsuario());
@@ -396,8 +426,10 @@ public class Banco {
     // --------------------------------------
 
     // --------------------------------------
+
     // -------------- METODOS ---------------
 
+    // ------- lista invertida -------
     public static boolean listaInvertida(RandomAccessFile arq, String name) throws Exception {
         Conta conta = new Conta(); // cria uma nova conta
         RandomAccessFile list = new RandomAccessFile("listName", "rw");
@@ -418,7 +450,7 @@ public class Banco {
                 String n = arq.readUTF(); //nome
 
                 String[] emails = new String[1000]; // armazenar os emails
-                for (int i = 0; i < conta.getEmail().size(); i++) {
+                for (int i = 0; i < conta.getQtd(); i++) {
                     emails[i] = arq.readUTF(); //email
                 }
 
@@ -446,11 +478,18 @@ public class Banco {
 
         return true;
     }
+    // -------------------------------
 
+    // ------- intercalacao -------
     public static boolean intercarlar(RandomAccessFile arq) {
 
         return false;
     }
+    // ----------------------------
+
+    // ------- ordenacao -------
+    
+    // -------------------------
 
     public static void main(String[] args) throws Exception {
 
@@ -502,33 +541,56 @@ public class Banco {
                     cont.setNomePessoa(sc.next());
 
                     // -------- loop para adicionar varios emails --------
+                    int quant = 0;
+
                     do {
                         int arroba = 0, ponto = 0; // variavel para verificar se o email tem @
-                        String temp = "";
+                        cont.setQtd(quant + 1);
+                        String[] temp = new String[quant + 1];
 
                         // -------- loop para verificar se o email tem @ --------
                         do {
                             System.out.print("Digite o Email: ");
-                            temp = sc.next(); // coloca o email em uma variavel temporaria
+                            temp[quant] = sc.next(); // coloca o email em uma variavel temporaria
 
-                            for (int i = 0; i < temp.length(); i++) {
-                                if (temp.charAt(i) == '@') {
-                                    arroba++;
-                                } else if (temp.charAt(i) == '.' && i > temp.indexOf("@")) {
-                                    ponto++;
-                                }
-                            }
+                            System.out.println(temp[quant]);
+
+                            if (temp[quant].contains("@")) { 
+                                arroba++; 
+                            } // verifica se o email tem @
+                            if (temp[quant].contains(".") && (temp[quant].indexOf(".") > temp[quant].indexOf("@"))) { 
+                                ponto++; 
+                            } // verifica se o email tem . e se o . esta depois do @
 
                             if (arroba == 0 || ponto == 0) {
                                 System.out.println("Email invalido!");
                             } else {
-                                cont.getEmail().add(temp);
+
+                                for (int i = 0; i < quant; i++) {
+                                    if (temp[quant].equals(cont.getEmail()[i])) {
+                                        System.out.println("Email ja cadastrado!");
+                                        arroba = 0;
+                                        ponto = 0;
+                                    }
+                                }
+
+                                for (int i = 0; i < cont.getQtd(); i++) {
+                                    cont.setEmail(temp);
+                                }                                
+
+                                break;
                             }
 
                         } while (arroba == 0 || ponto == 0);
 
                         System.out.println("Deseja adicionar um novo email? (1 - sim / 2 - não)");
                         answer = sc.nextInt();
+
+                        if (answer == 1)
+                            quant++;
+
+                        System.out.println(quant);
+                        System.out.println(cont.getQtd());
 
                     } while (answer == 1);
 
@@ -735,11 +797,13 @@ public class Banco {
                             newAccount.setSenha(sc.next());
                             break;
                         case 6://Email
-                            ArrayList<String> arrayAtualizacao = new ArrayList<String>();
+                            int qt = newAccount.getQtd();
+                            String[] arrayAtualizacao = new String[qt];
                             int input = 0;
                             do{
                                 System.out.println("Digite um novo email: ");
-                                arrayAtualizacao.add(sc.next());
+                                newAccount.setQtd(qt++);
+                                arrayAtualizacao[qt] = sc.next();
                                 System.out.println("Deseja adicionar mais emails? 1 - Sim / 2 - Nao");
                                 input = sc.nextInt();
                             }while(input == 1);
