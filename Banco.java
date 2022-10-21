@@ -4,12 +4,16 @@
  * Integrantes: Bárbara Luciano e Luisa Nogueira
  * 
 ************************************************************/
+
 import java.io.RandomAccessFile;
+import java.lang.reflect.Field;
 import java.io.IOException;
 import java.util.*;
+import java.io.File;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.util.Collections;
 import java.io.DataOutputStream;
 
 class Conta {
@@ -202,6 +206,460 @@ class Conta {
     // ------------------------------
 
     // ---------------------------------------
+}
+
+class Intercalacao{
+
+    public static void deleteArq(){ //Apagar arquivos já existentes
+        File file1 = new File("file1.bin");
+        File file2 = new File("file2.bin");
+        File file3 = new File("file3.bin");
+        File file4 = new File("file4.bin");
+        File file5 = new File("finalFile.bin");
+
+        file1.delete();
+        file2.delete();
+        file3.delete();
+        file4.delete();
+        file5.delete();
+
+    }
+
+    public static Conta ler(RandomAccessFile arq, int pesquisa){
+
+        try{
+            Conta conta1 = new Conta();
+
+            arq.seek(0); //Ponteiro no inicio
+            while(arq.getFilePointer() < arq.length()){ // Percorre o arq ate que seja do tamanho do arq original
+                char lapide = arq.readChar();
+
+                if(lapide == ' '){ // verifica se a lapide nn esta ativa
+                    int arqSize = arq.readInt(); // Pegar o tam do registro
+                    conta1.setIdConta(arq.readInt()); // Set no Id para verificar a conta
+
+                    if(conta1.getIdconta() == pesquisa){ // Verifica o ID
+                        conta1.setNomePessoa(arq.readUTF());
+                        ArrayList<String> arrayAux = new ArrayList<String>();
+                        int qtdEmail = arq.readInt();
+
+                        for( int i = 0; i < qtdEmail; i++){
+                            arrayAux.add(arq.readUTF());
+                        }
+
+                        conta1.setEmail(arrayAux);
+                        conta1.setNomeUsuario(arq.readUTF());
+                        conta1.setSenha(arq.readUTF());
+                        conta1.setCpf(arq.readUTF());
+                        conta1.setCidade(arq.readUTF());
+                        conta1.setTransferenciasRealizadas(arq.readInt());
+                        conta1.setSaldoConta(arq.readFloat());
+
+                        return conta1;
+                    }else { // Se o ID for diferente
+                        arq.skipBytes(arqSize - 4); // Pula todo o registro
+                    }
+                }else{
+                    int tamInt = arq.readInt();
+                    arq.skipBytes(tamInt);
+                }
+            }
+
+            return null;
+        }catch(Exception e){
+            System.out.println("Nao foi possivel ler o registro!");
+            return null;
+        }
+    }
+
+    public static boolean intercalar(RandomAccessFile arq, int limite) throws IOException{
+        deleteArq(); // deleta os arq que ja existem
+        ArrayList<Conta> conta2 = new ArrayList<Conta>();
+
+        // cria os arq em binario
+        RandomAccessFile file1 = new RandomAccessFile("file1.bin", "rw");
+        RandomAccessFile file2 = new RandomAccessFile("file2.bin", "rw");
+        RandomAccessFile file3 = new RandomAccessFile("file3.bin", "rw");
+        RandomAccessFile file4 = new RandomAccessFile("file4.bin", "rw");
+        RandomAccessFile file5 = new RandomAccessFile("finalFile.bin", "rw");
+
+        int contVolta = 0;
+
+        try{
+            arq.seek(4); //Ponteiro no inicio do arq
+            while(arq.getFilePointer() < arq.length()){ // percorrer todo o arq
+                Conta conta3 = new Conta();
+                if(arq.readChar() == ' '){ //verificar se a lapode ta ativa
+                    int tamFile = arq.readInt(); //tam do arq
+                    int idNew = arq.readInt(); //set o ID
+                    conta3 = Banco.readId(arq,idNew);
+
+                    conta2.add(conta3);
+                }else{
+                    arq.skipBytes(arq.readInt()); //Pulo o registro
+                }
+            }
+
+        }catch(Exception e){
+            arq.skipBytes(arq.readInt());
+            System.out.println("Nao foi possivel ler o arquivo!");
+        }
+
+        // ------------------- 1 distribuição --------------------
+        while(conta2.size() > 0){ //Enquanto o array list tiver algum dado
+            contVolta++;
+            ArrayList<Conta> auxConta = new ArrayList<Conta>();
+            for(int i = 0; i < limite; i++){
+                if(conta2.size() > 0){ //verifica se o arrayList nn ta vazio 
+                    auxConta.add(conta2.get(0)); // Adiciono o elemento no arrayList Temp
+                    conta2.remove(0); // Removo o elemento do arrayList principal
+                }
+            }
+
+            Collections.sort(auxConta); //Ordena temporariamente 
+
+            int tamTmp = auxConta.size();
+            for(int i  = 0; i < tamTmp; i++){
+                Banco.create(file1,auxConta.get(0));
+                conta2.remove(0);
+            }
+
+            for(int i = 0; i < limite; i++){
+                if(conta2.size() > 0){ //verifica se o arraylist nn ta vazio
+                    auxConta.add(conta2.get(0));//Adiciono o elemento no arraylist temporario
+                    conta2.remove(0);//Removo o elemento do arraylist principal
+                }
+            }
+
+            Collections.sort(auxConta); //Ordena temporariamente 
+
+            tamTmp = auxConta.size();
+            for(int i  = 0; i < tamTmp; i++){
+                Banco.create(file2,auxConta.get(0));
+                conta2.remove(0);
+            }
+        }
+
+        // Ler arquivos 1 e 2
+        ArrayList<Conta> account1 = new ArrayList<Conta>();
+        ArrayList<Conta> account2 = new ArrayList<Conta>();
+
+        try{
+            file1.seek(0); //Ponteiro no incio do arq
+            while(file1.getFilePointer() < file1.length()){ //percorrer todo o arquivio
+                Conta newAccount1 = new Conta();
+                char lapide = file1.readChar(); //ler a lapide
+                if(lapide == ' '){ // verifica se a lapide esta vazia
+                    int tamFile1 = file1.readInt(); //tam do arq
+                    int idNew = file1.readInt();// set id
+                    newAccount1 = ler(file1,idNew);
+                    account1.add(newAccount1);
+                }else{
+                    file1.skipBytes(file1.readInt()); //Pula todo o registro 
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Nao foi possivel ler o arquivo");
+        }
+
+        try{
+            file2.seek(0); //Ponteiro no incio do arq
+            while(file2.getFilePointer() < file2.length()){ //percorrer todo o arquivio
+                Conta newAccount2 = new Conta();
+                char lapide = file2.readChar(); //ler a lapide
+                if(lapide == ' '){ //verificar se a lapide esta ativa
+                    int tamFile2 = file2.readInt(); // tam do arq
+                    int idNew = file2.readInt(); //set ID
+                    newAccount2 = ler(file2,idNew);
+                    account2.add(newAccount2);
+                }else{
+                    file2.skipBytes(file2.readInt()); //Pula todo o registro 
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Nao foi possivel ler o arquivo");
+        }
+
+
+        // ---------- Primeira Intercalação -----------
+        for(int j = 0; j < contVolta; j++){
+            int usoAccount1 = 0;
+            int usoAccount2 = 0;
+
+            for(int i = 0; i < (limite*2); i++){
+                if(account1.size() == 0 && account2.size() == 0){}
+                else if(account1.size() != 0 && account2.size() == 0 && usoAccount1 < limite){
+                    Banco.create(file3, account1.get(0));
+                    account1.remove(0);
+                    usoAccount1++;
+
+                }else if(account1.size() == 0 && account2.size() != 0 && usoAccount2 < limite){
+                    Banco.create(file3, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(usoAccount1 == limite && usoAccount2 < limite){
+                    Banco.create(file3, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(usoAccount1 < limite && usoAccount2 == limite){
+                    Banco.create(file3, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(account1.size() != 0 && account2.size() != 0){
+                    if(account1.get(0).getIdconta() < account2.get(0).getIdconta() && usoAccount1 < limite){
+                        Banco.create(file3, account1.get(0));
+                        account1.remove(0);
+                        usoAccount1++;
+
+                    }else if(account1.get(0).getIdconta() > account2.get(0).getIdconta() && usoAccount2 < limite){
+                        Banco.create(file3, account2.get(0));
+                        account2.remove(0);
+                        usoAccount2++;
+
+                    }
+                }
+            }
+
+            usoAccount1 = 0;
+            usoAccount2 = 0;
+
+            for(int i = 0; i < (limite*2); i++){
+                if(account1.size() == 0 && account2.size() == 0){}
+                else if(account1.size() != 0 && account2.size() == 0 && usoAccount1 < limite){
+                    Banco.create(file4, account1.get(0));
+                    account1.remove(0);
+                    usoAccount1++;
+
+                }else if(account1.size() == 0 && account2.size() != 0 && usoAccount2 < limite){
+                    Banco.create(file4, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(usoAccount1 == limite && usoAccount2 < limite){
+                    Banco.create(file4, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(usoAccount1 < limite && usoAccount2 == limite){
+                    Banco.create(file4, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(account1.size() != 0 && account2.size() != 0){
+                    if(account1.get(0).getIdconta() < account2.get(0).getIdconta() && usoAccount1 < limite){
+                        Banco.create(file4, account1.get(0));
+                        account1.remove(0);
+                        usoAccount1++;
+
+                    }else if(account1.get(0).getIdconta() > account2.get(0).getIdconta() && usoAccount2 < limite){
+                        Banco.create(file4, account2.get(0));
+                        account2.remove(0);
+                        usoAccount2++;
+
+                    }
+                }
+            }
+        }
+
+        // Ler arquivos 3 e 4 
+
+        file1.setLength(0);// Limpa o arquivo
+        file2.setLength(0); // Limpa o arquivo
+        account1.clear(); // Limpa o arraylist
+        account2.clear(); // Limpa o arraylist
+
+        try{
+            file3.seek(0); //Ponteiro no incio do arq
+            while(file3.getFilePointer() < file3.length()){ //percorrer todo o arquivio
+                Conta newAccount1 = new Conta();
+                char lapide = file3.readChar(); //ler a lapide
+                if(lapide == ' '){ // verifica se a lapide esta vazia
+                    int tamFile3 = file3.readInt(); //tam do arq
+                    int idNew = file3.readInt();// set id
+                    newAccount1 = ler(file3,idNew);
+                    account1.add(newAccount1);
+                }else{
+                    file3.skipBytes(file3.readInt()); //Pula todo o registro 
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Nao foi possivel ler o arquivo");
+        }
+
+        try{
+            file4.seek(0); //Ponteiro no incio do arq
+            while(file4.getFilePointer() < file4.length()){ //percorrer todo o arquivio
+                Conta newAccount2 = new Conta();
+                char lapide = file4.readChar(); //ler a lapide
+                if(lapide == ' '){ //verificar se a lapide esta ativa
+                    int tamFile4 = file4.readInt(); // tam do arq
+                    int idNew = file4.readInt(); //set ID
+                    newAccount2 = ler(file4,idNew);
+                    account2.add(newAccount2);
+                }else{
+                    file4.skipBytes(file4.readInt()); //Pula todo o registro 
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Nao foi possivel ler o arquivo");
+        }
+
+
+        // ---------- Segunda Intercalação -----------
+        for(int j = 0; j < contVolta; j++){
+            int usoAccount1 = 0;
+            int usoAccount2 = 0;
+
+            for(int i = 0; i < (limite*4); i++){
+                if(account1.size() == 0 && account2.size() == 0){}
+                else if(account1.size() != 0 && account2.size() == 0 && usoAccount1 < limite){
+                    Banco.create(file1, account1.get(0));
+                    account1.remove(0);
+                    usoAccount1++;
+
+                }else if(account1.size() == 0 && account2.size() != 0 && usoAccount2 < limite){
+                    Banco.create(file1, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(usoAccount1 == limite && usoAccount2 < limite){
+                    Banco.create(file1, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(usoAccount1 < limite && usoAccount2 == limite){
+                    Banco.create(file1, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(account1.size() != 0 && account2.size() != 0){
+                    if(account1.get(0).getIdconta() < account2.get(0).getIdconta() && usoAccount1 < limite){
+                        Banco.create(file1, account1.get(0));
+                        account1.remove(0);
+                        usoAccount1++;
+
+                    }else if(account1.get(0).getIdconta() > account2.get(0).getIdconta() && usoAccount2 < limite){
+                        Banco.create(file1, account2.get(0));
+                        account2.remove(0);
+                        usoAccount2++;
+
+                    }
+                }
+            }
+
+            usoAccount1 = 0;
+            usoAccount2 = 0;
+
+            for(int i = 0; i < (limite*4); i++){
+                if(account1.size() == 0 && account2.size() == 0){}
+                else if(account1.size() != 0 && account2.size() == 0 && usoAccount1 < limite){
+                    Banco.create(file2, account1.get(0));
+                    account1.remove(0);
+                    usoAccount1++;
+
+                }else if(account1.size() == 0 && account2.size() != 0 && usoAccount2 < limite){
+                    Banco.create(file2, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(usoAccount1 == limite && usoAccount2 < limite){
+                    Banco.create(file2, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(usoAccount1 < limite && usoAccount2 == limite){
+                    Banco.create(file2, account2.get(0));
+                    account2.remove(0);
+                    usoAccount2++;
+
+                }else if(account1.size() != 0 && account2.size() != 0){
+                    if(account1.get(0).getIdconta() < account2.get(0).getIdconta() && usoAccount1 < limite){
+                        Banco.create(file2, account1.get(0));
+                        account1.remove(0);
+                        usoAccount1++;
+
+                    }else if(account1.get(0).getIdconta() > account2.get(0).getIdconta() && usoAccount2 < limite){
+                        Banco.create(file2, account2.get(0));
+                        account2.remove(0);
+                        usoAccount2++;
+
+                    }
+                }
+            }
+        }
+
+        // Ler arquivos 1 e 2
+        account1.clear();
+        account2.clear();
+
+        try{
+            file1.seek(0); //Ponteiro no incio do arq
+            while(file1.getFilePointer() < file1.length()){ //percorrer todo o arquivio
+                Conta newAccount1 = new Conta();
+                char lapide = file1.readChar(); //ler a lapide
+                if(lapide == ' '){ // verifica se a lapide esta vazia
+                    int tamFile1 = file1.readInt(); //tam do arq
+                    int idNew = file1.readInt();// set id
+                    newAccount1 = ler(file1,idNew);
+                    account1.add(newAccount1);
+                }else{
+                    file1.skipBytes(file1.readInt()); //Pula todo o registro 
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Nao foi possivel ler o arquivo");
+        }
+
+        try{
+            file2.seek(0); //Ponteiro no incio do arq
+            while(file2.getFilePointer() < file2.length()){ //percorrer todo o arquivio
+                Conta newAccount2 = new Conta();
+                char lapide = file2.readChar(); //ler a lapide
+                if(lapide == ' '){ //verificar se a lapide esta ativa
+                    int tamFile2 = file2.readInt(); // tam do arq
+                    int idNew = file2.readInt(); //set ID
+                    newAccount2 = ler(file2,idNew);
+                    account2.add(newAccount2);
+                }else{
+                    file2.skipBytes(file2.readInt()); //Pula todo o registro 
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Nao foi possivel ler o arquivo");
+        }
+
+        // ---------- Terceira Intercalação -----------
+
+        int tamFinal = account1.size() + account2.size();
+
+        for(int i = 0; i < tamFinal; i++){
+
+            if(account1.size() == 0 && account2.size() == 0){}
+
+            else if(account1.size() != 0 && account2.size() == 0){
+                Banco.create(file5, account1.get(0));
+                account1.remove(0);
+                
+            }else if(account1.size() == 0 && account2.size() != 0){
+                Banco.create(file5, account2.get(0));
+                account2.remove(0);
+
+            }else if(account1.size() != 0 && account2.size() != 0){
+                if(account1.get(0).getIdconta() < account2.get(0).getIdconta()){
+                    Banco.create(file5, account1.get(0));
+                    account1.remove(0);
+                    
+                }else if(account1.get(0).getIdconta() > account2.get(0).getIdconta()){
+                    Banco.create(file5, account2.get(0));
+                    account2.remove(0);
+
+                }
+            }
+        }
+    }
 }
 
 // --------------------- CRUD -----------------------
@@ -480,16 +938,10 @@ public class Banco {
     }
     // -------------------------------
 
-    // ------- intercalacao -------
-    public static boolean intercarlar(RandomAccessFile arq) {
-
-        return false;
-    }
+    // ----------------------------
     // ----------------------------
 
-    // ------- ordenacao -------
-    
-    // -------------------------
+
 
     public static void main(String[] args) throws Exception {
 
@@ -856,20 +1308,25 @@ public class Banco {
                     System.out.println("Deseja Intercarlar os arquivos? ");
                     System.out.println("\t1- sim");
                     System.out.println("\t2- nao");
+                    int limite = 0;
 
                     do{
                         aux = sc.nextInt();
+                        System.out.println("\nDigite o limite de registros que devem ter na memoria principal: ");
+                        limite = sc.nextInt();
                         if(aux < 1 || aux > 2){
                             System.out.println("Essa opcao nao existe!");
                         }else{
                             System.out.println("Digite um numero: ");
                             sc.next();
+                            System.out.println("\nDigite o limite de registros que devem ter na memoria principal: ");
+                            limite = sc.nextInt();
                             break;
                         }
                     }while(aux < 1 || aux > 2);
 
                     if(aux == 1){
-                        if(intercarlar(arq)){
+                        if(Intercalacao.intercalar(arq,limite)){
                             System.out.println("Arqvivos intercalados com sucesso!");
                         }else{
                             System.out.println("Nao foi possivel intercalar os arquivos!");
