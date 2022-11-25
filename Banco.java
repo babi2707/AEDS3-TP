@@ -1,4 +1,3 @@
-
 /************************************************************
  * AEDS3 - TP01 
  * 
@@ -973,8 +972,8 @@ public class Banco {
             System.out.println("\t5- Deletar registro");
             System.out.println("\t6- Intercalar arquivo");
             System.out.println("\t7- Lista Invertida");
-            // System.out.println("\t8- Arvore B+");
-            // System.out.println("\t9- Hashing");
+            System.out.println("\t8- Compressão do arquivo");
+            // System.out.println("\t9- Descompressão do arquivo");
             System.out.println("------------------------------------\n");
 
             do {
@@ -1377,13 +1376,20 @@ public class Banco {
 
                     break;
 
-                /*
-                 * case 8:
-                 * System.out.println("\n\nOpcao escolhida: \n\t8- Arvore B+");
-                 * break;
-                 * case 9:
-                 * System.out.println("\n\nOpcao escolhida: \n\t9- Hashing");
-                 */
+                
+                case 8:
+                    System.out.println("\n\nOpcao escolhida: \n\t8- Compressão do arquivo");
+                    System.out.println("\nEscolha por qual metodo a compressao deve ser feita: ");
+                    System.out.println("\t1- Huffman");
+                    System.out.println("\t2- LZW");
+                
+                    break;
+                case 9:
+                    System.out.println("\n\nOpcao escolhida: \n\t9- Descompressão do arquivo");
+                    System.out.println("\nEscolha por qual metodo a descompressão deve ser feita: ");
+                    System.out.println("\t1- Huffman");
+                    System.out.println("\t2- LZW");
+                    break;
 
                 default:
                     System.out.print("\n\nOpcao invalida!");
