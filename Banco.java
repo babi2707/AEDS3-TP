@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.util.Collections;
 import java.io.DataOutputStream;
+//import Lwz.java;
 
 class Conta {
 
@@ -753,7 +754,7 @@ public class Banco {
             return null;
 
         } catch (Exception e) {
-            System.out.println("Não foi possível ler o registro!");
+            System.out.println("Nao foi possível ler o registro!");
             return null;
         }
     }
@@ -798,7 +799,7 @@ public class Banco {
 
             return conta;
         } catch (Exception e) {
-            System.out.println("Não foi possivel ler o registro!");
+            System.out.println("Nao foi possivel ler o registro!");
             return null;
         }
     }
@@ -850,7 +851,7 @@ public class Banco {
 
             return true;
         } catch (Exception e) {
-            System.out.println("Não foi possivel atualizar o registro!");
+            System.out.println("Nao foi possivel atualizar o registro!");
             return false;
         }
     }
@@ -972,7 +973,7 @@ public class Banco {
             System.out.println("\t5- Deletar registro");
             System.out.println("\t6- Intercalar arquivo");
             System.out.println("\t7- Lista Invertida");
-            System.out.println("\t8- Compressão do arquivo");
+            System.out.println("\t8- Compressao do arquivo");
             // System.out.println("\t9- Descompressão do arquivo");
             System.out.println("------------------------------------\n");
 
@@ -993,14 +994,16 @@ public class Banco {
                 case 1:
                     cont = new Conta();
                     int answer = 0;
+                    int posicao = 0;
+                    boolean stop = false;
                     System.out.println("\n\nOpcao escolhida: \n\t1- Criar conta");
 
                     cont.setIdConta(id++);
-                    System.out.println("Seu ID é: " + cont.getIdconta() + "\n\n");
+                    System.out.println("Seu ID e: " + cont.getIdconta() + "\n\n"); //informa o id da conta a medida que for criando
 
                     System.out.print("Digite o Nome da Pessoa: ");
-                    cont.setNomePessoa(sc.next());
-
+                    cont.setNomePessoa(sc.next()); //ler o nome da pessoa 
+                 
                     // -------- loop para adicionar varios emails --------
                     int quant = 0;
 
@@ -1026,7 +1029,7 @@ public class Banco {
                             } else {
 
                                 for (int i = 0; i < quant; i++) {
-                                    if (temp[quant].equals(cont.getEmail()[i])) {
+                                    if (temp[quant].equals(cont.getEmail()[i])) { // alerta quando o email digitado na conta já existe
                                         System.out.println("Email ja cadastrado!");
                                         arroba = 0;
                                         ponto = 0;
@@ -1034,7 +1037,7 @@ public class Banco {
                                 }
 
                                 for (int i = 0; i < cont.getQtd(); i++) {
-                                    cont.setEmail(temp);
+                                    cont.setEmail(temp); // add email ao vetor de emails
                                 }
 
                                 break;
@@ -1042,14 +1045,14 @@ public class Banco {
 
                         } while (arroba == 0 || ponto == 0);
 
-                        System.out.println("Deseja adicionar um novo email? (1 - sim / 2 - não)");
+                        System.out.println("Deseja adicionar um novo email? (1 - sim / 2 - nao)");
                         answer = sc.nextInt();
 
                         if (answer == 1)
                             quant++;
 
-                        System.out.println(quant);
-                        System.out.println(cont.getQtd());
+                        //System.out.println(quant);
+                        //System.out.println(cont.getQtd());
 
                     } while (answer == 1);
 
@@ -1058,7 +1061,7 @@ public class Banco {
                     do {
                         String tmp = "";
                         System.out.print("Digite o username: ");
-                        tmp = sc.next();
+                        tmp = sc.next(); // ler usuario da conta
 
                         cont.setNomeUsuario(tmp);
 
@@ -1087,14 +1090,14 @@ public class Banco {
                     do {
                         System.out.print("Digite o CPF: ");
                         cont.setCpf(sc.next());
-                        if (cont.getCpf().length() != 11) {
+                        if (cont.getCpf().length() != 11) { //se o cpf nn possuir 11 numeros ele é invalido
                             System.out.println("CPF inválido!");
                         }
 
-                    } while (cont.getCpf().length() != 11);
+                    } while (cont.getCpf().length() != 11); //repetir até que o cpf seja valido
 
                     System.out.print("Digite a cidade: ");
-                    cont.setCidade(sc.next());
+                    cont.setCidade(sc.next()); //ler cidade
 
                     System.out.print("Digite o saldo da conta: R$ ");
                     cont.setSaldoConta(sc.nextFloat()); // saldo da conta
@@ -1117,30 +1120,30 @@ public class Banco {
                 case 2:
                     System.out.println("\n\nOpcao escolhida: \n\t 2- Realizar transferencia");
                     System.out.println("\nDigite o ID da primeira conta: ");
-                    int id1 = sc.nextInt();
+                    int id1 = sc.nextInt(); // le o id da conta que vai transferir 
 
-                    System.out.println("\nDigite o ID da conta que deseja transferir: ");
-                    int id2 = sc.nextInt();
+                    System.out.println("\nDigite o ID da conta a qual deseja transferir: ");
+                    int id2 = sc.nextInt();// le o id da conta que vai receber a transferencia 
 
                     System.out.println("\nDigite o valor a ser transferido: ");
-                    float value = sc.nextFloat();
+                    float value = sc.nextFloat(); // le o valo de transferencia 
 
                     Conta account1 = readId(arq, id1);
                     Conta account2 = readId(arq, id2);
 
-                    if (account1 == null) {
-                        System.out.println("Essa conta não existe!");
-                    } else if (account2 == null) {
-                        System.out.println("A conta de destino não existe!");
-                    } else if (account1.getSaldoConta() < value) {
+                    if (account1 == null) { //verifica se conta 1 nn é nula/ nn existe
+                        System.out.println("Essa conta nao existe!");
+                    } else if (account2 == null) { // verfica se a conta 2 nn é nula/ nn exite
+                        System.out.println("A conta de destino nao existe!");
+                    } else if (account1.getSaldoConta() < value) { // verifica se o valor a ser transferido nao é maior que o valor da conta
                         System.out.println("Saldo insuficiente!");
                     } else {
-                        account1.setSaldoConta(account1.getSaldoConta() - value);
-                        account2.setSaldoConta(account2.getSaldoConta() + value);
-                        account1.setTransferenciasRealizadas(account1.getTransferenciasRealizadas() + 1);
-                        account2.setTransferenciasRealizadas(account2.getTransferenciasRealizadas() + 1);
-                        update(arq, account1);
-                        update(arq, account2);
+                        account1.setSaldoConta(account1.getSaldoConta() - value);// tira da conta 1 o valor a ser transferido
+                        account2.setSaldoConta(account2.getSaldoConta() + value);// adiciona a conta 2 o valor transferido
+                        account1.setTransferenciasRealizadas(account1.getTransferenciasRealizadas() + 1); //aumenta o numero de transferencias
+                        account2.setTransferenciasRealizadas(account2.getTransferenciasRealizadas() + 1);// aumenta o numero de transferencias 
+                        update(arq, account1); //atualiza conta 1
+                        update(arq, account2);// atualiza conta 2
                     }
 
                     if (update(arq, account1) && update(arq, account2)) {
@@ -1159,7 +1162,7 @@ public class Banco {
                     System.out.print("Digite o ID da conta que deseja ler: ");
                     numID = sc.nextInt();
 
-                    if (cont.getIdconta() == numID) {
+                    if (cont.getIdconta() == numID) { // se o id da conta for igual ao id digitado, imprimir na tela os dados da conta
                         System.out.println("\n\nID: " + cont.getIdconta());
                         System.out.println("Nome da pessoa: " + cont.getNomePessoa());
                         System.out.println("Email: " + cont.getEmail());
@@ -1175,8 +1178,8 @@ public class Banco {
                         count++;
                     }
 
-                    if (count == id) {
-                        System.out.println("\nNumero ID não encontrado!");
+                    if (count == id) { // verifica se o id existe 
+                        System.out.println("\nNumero ID nao encontrado!");
                     } else {
                         System.out.println("\nArquivo de registros lido com sucesso!");
                     }
@@ -1223,7 +1226,7 @@ public class Banco {
                         try {
                             aux = sc.nextInt();
                             if (aux < 1 || aux > 8)
-                                System.out.println("Opção invalida!");
+                                System.out.println("Opcao invalida!");
                         } catch (Exception e) {
                             System.out.println("Digite um numero!");
                             sc.next();
@@ -1378,18 +1381,126 @@ public class Banco {
 
                 
                 case 8:
-                    System.out.println("\n\nOpcao escolhida: \n\t8- Compressão do arquivo");
+                    int num = 0, //ler o numero do metodo selecionado
+                        IDnum = 0, //ler o id da conta
+                        aux1 = 0; //contador
+                    List<Integer> comprimir;
+                    
+                    System.out.println("\n\nOpcao escolhida: \n\t8- Compressao do arquivo");
                     System.out.println("\nEscolha por qual metodo a compressao deve ser feita: ");
                     System.out.println("\t1- Huffman");
                     System.out.println("\t2- LZW");
-                
+
+                    
+             
+                    do { // verifica se a opcao escolhida existe
+                        try {
+                            num = sc.nextInt();
+                            if (num < 1 || num > 2)
+                                System.out.println("Opcao invalida!");
+                        } catch (Exception e) {
+                            System.out.println("Digite um numero!");
+                            sc.next();
+                            break;
+                        }
+                    } while (num < 1 || num > 2); // Enquanto a opção for inválida continua no loop
+
+                    System.out.print("Digite o ID da conta que deseja ler: ");
+                    IDnum = sc.nextInt();
+
+                    switch (num) {
+                        case 1: //compressão por huffman
+                            break;
+
+                        case 2: //compressão por lzw
+
+                            if (cont.getIdconta() == IDnum) {
+                                //--------------------- ID ---------------------
+                                /*comprimir = Lzw.compressao(Integer.toString(cont.getIdconta()));
+                                System.out.println("----- ID -----");
+                                System.out.println("Compressao: " + comprimir);
+                                System.out.println("Descompressao: " + Lzw.descompressao(comprimir));*/
+
+                                //--------------------- Nome --------------------
+                                comprimir = Lzw.compressao(cont.getNomePessoa());
+                                System.out.println("----- NOME -----");
+                                System.out.println("Compressao: " + comprimir);
+                                System.out.println("Descompressao: " + Lzw.descompressao(comprimir));
+
+                                //------------------ Email -----------------------
+                                // COLOCAR DENTRO DE UM FOR
+                                /*int qntdd = newAccount.getQtd();
+                                for(int i = 0; i < qntdd; i++){
+                                    comprimir = Lzw.compressao(cont.getEmail());
+                                    System.out.println("----- EMAIL -----");
+                                    System.out.println("Compressao: " + comprimir);
+                                    System.out.println("Descompressao: " + Lzw.descompressao(comprimir));
+                                }
+                                comprimir = Lzw.compressao(cont.getEmail());
+                                System.out.println("----- EMAIL -----");
+                                System.out.println("Compressao: " + comprimir);
+                                System.out.println("Descompressao: " + Lzw.descompressao(comprimir));*/
+                                
+                                //------------------- Username -------------------
+                                comprimir = Lzw.compressao(cont.getNomeUsuario());
+                                System.out.println();
+                                System.out.println("----- USERNAME -----");
+                                System.out.println("Compressao: " + comprimir);
+                                System.out.println("Descompressao: " + Lzw.descompressao(comprimir));
+
+                                //-------------------- Senha ---------------------
+                                comprimir = Lzw.compressao(cont.getSenha());
+                                System.out.println();
+                                System.out.println("----- SENHA -----");
+                                System.out.println("Compressao: " + comprimir);
+                                System.out.println("Descompressao: " + Lzw.descompressao(comprimir));
+
+                                //--------------------- Cpf ----------------------
+                                comprimir = Lzw.compressao(cont.getCpf());
+                                System.out.println();
+                                System.out.println("----- CPF -----");
+                                System.out.println("Compressao: " + comprimir);
+                                System.out.println("Descompressao: " + Lzw.descompressao(comprimir));
+
+                                //--------------------- Cidade -------------------
+                                comprimir = Lzw.compressao(cont.getCidade());
+                                System.out.println();
+                                System.out.println("----- CIDADE -----");
+                                System.out.println("Compressao: " + comprimir);
+                                System.out.println("Descompressao: " + Lzw.descompressao(comprimir));
+
+                                //---------------------- Saldo -------------------
+                                comprimir = Lzw.compressao(Double.toString(cont.getSaldoConta()));
+                                System.out.println();
+                                System.out.println("----- SALDO CONTA -----");
+                                System.out.println("Compressao: " + comprimir);
+                                System.out.println("Descompressao: " + Lzw.descompressao(comprimir));
+
+                                //---------------- Transferencias ----------------
+                                /*comprimir = Lzw.compressao(Double.toString(cont.getTransferenciasRealizadas()));
+                                System.out.println();
+                                System.out.println("----- TRANSFERENCIAS REALIZADAS -----");
+                                System.out.println("Compressao: " + comprimir);
+                                System.out.println("Descompressao: " + Lzw.descompressao(comprimir));*/
+
+                            } else {
+                                aux1++;
+                            }
+    
+                            if (aux1 == id) {
+                                System.out.println("\nNumero ID nao encontrado!");
+                            } else {
+                                System.out.println("\nArquivo de registros lido com sucesso!");
+                            }
+
+                            break;
+                           
+                    }
+
                     break;
-                case 9:
-                    System.out.println("\n\nOpcao escolhida: \n\t9- Descompressão do arquivo");
-                    System.out.println("\nEscolha por qual metodo a descompressão deve ser feita: ");
-                    System.out.println("\t1- Huffman");
-                    System.out.println("\t2- LZW");
-                    break;
+                //case 9:
+                   
+                    //break;
 
                 default:
                     System.out.print("\n\nOpcao invalida!");
@@ -1403,7 +1514,7 @@ public class Banco {
 
                 // -------- mensagem de erro --------
                 if (r != 1 && r != 0) {
-                    System.out.print("Opção invalida!");
+                    System.out.print("Opcao invalida!");
                 }
 
                 // -------- mensagem de despedida --------
