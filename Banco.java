@@ -1,5 +1,5 @@
 /************************************************************
- * AEDS3 - TP01 
+ * AEDS3 - TP02
  * 
  * Integrantes: Bárbara Luciano e Luisa Nogueira
  * 
@@ -16,6 +16,7 @@ import java.io.DataInputStream;
 import java.util.Collections;
 import java.io.DataOutputStream;
 //import Lwz.java;
+//import Huffman.java;
 
 class Conta {
 
@@ -685,6 +686,7 @@ public class Banco {
 
             arq.writeInt(conta.getIdconta());
             arq.writeUTF(conta.getNomePessoa());
+            arq.writeInt(conta.getQtd());
 
             // --- escreve todos os emails ---
             for (int i = 0; i < conta.getQtd(); i++) {
@@ -957,9 +959,11 @@ public class Banco {
 
         Scanner sc = new Scanner(System.in);
         int resp = 0, id = 0, r = 0, aux = 0;
+        String codeText = "";
         Conta cont = new Conta();
 
         RandomAccessFile arq = new RandomAccessFile("contas.txt", "rw");
+        RandomAccessFile compFile = new RandomAccessFile("contasHuffmanCompressao1", "rw");
 
         // --------------- menu ---------------
 
@@ -974,7 +978,6 @@ public class Banco {
             System.out.println("\t6- Intercalar arquivo");
             System.out.println("\t7- Lista Invertida");
             System.out.println("\t8- Compressao do arquivo");
-            // System.out.println("\t9- Descompressão do arquivo");
             System.out.println("------------------------------------\n");
 
             do {
@@ -999,7 +1002,7 @@ public class Banco {
                     System.out.println("\n\nOpcao escolhida: \n\t1- Criar conta");
 
                     cont.setIdConta(id++);
-                    System.out.println("Seu ID e: " + cont.getIdconta() + "\n\n"); //informa o id da conta a medida que for criando
+                    System.out.println("Seu ID eh: " + cont.getIdconta() + "\n\n"); //informa o id da conta a medida que for criando
 
                     System.out.print("Digite o Nome da Pessoa: ");
                     cont.setNomePessoa(sc.next()); //ler o nome da pessoa 
@@ -1051,8 +1054,6 @@ public class Banco {
                         if (answer == 1)
                             quant++;
 
-                        //System.out.println(quant);
-                        //System.out.println(cont.getQtd());
 
                     } while (answer == 1);
 
@@ -1064,22 +1065,6 @@ public class Banco {
                         tmp = sc.next(); // ler usuario da conta
 
                         cont.setNomeUsuario(tmp);
-
-                        /*
-                         * for (int i = 0; i < cont.; i++) {
-                         * if (cont.getEmail().get(i).getNomeUsuario().contains(tmp)) {
-                         * repeat++;
-                         * } else {
-                         * repeat = 0;
-                         * }
-                         * }
-                         * if (repeat != 0) {
-                         * System.out.
-                         * println("Usuario invalido! Esse username ja existe. Escolha outro!");
-                         * } else {
-                         * cont.setNomeUsuario(tmp);
-                         * }
-                         */
 
                     } while (repeat != 0);
 
@@ -1390,11 +1375,11 @@ public class Banco {
                     System.out.println("\nEscolha por qual metodo a compressao deve ser feita: ");
                     System.out.println("\t1- Huffman");
                     System.out.println("\t2- LZW");
-
                     
              
                     do { // verifica se a opcao escolhida existe
                         try {
+                            System.out.print("Digite a opcao escolhida: ");
                             num = sc.nextInt();
                             if (num < 1 || num > 2)
                                 System.out.println("Opcao invalida!");
@@ -1410,6 +1395,64 @@ public class Banco {
 
                     switch (num) {
                         case 1: //compressão por huffman
+
+                            String compressed = "";
+
+                            if (cont.getIdconta() == IDnum) {
+
+                                // System.out.println("----- ID -----");
+                                // Huffman.start("" + cont.getIdconta());
+                                // compressed += Huffman.compress("" + cont.getIdconta());
+
+                                System.out.println("----- Nome -----");
+                                Huffman.start(cont.getNomePessoa());
+                                compressed = Huffman.compress(cont.getNomePessoa());
+
+                                /* 
+                                for (int i = 0; i < cont.getQtd(); i++) {
+                                    System.out.println("----- Email " + i + " -----");
+                                    Huffman.start(cont.getEmail()[i]);
+                                    compressed += Huffman.compress(cont.getEmail());
+                                }
+                                */
+
+                                
+                                System.out.println("----- Username -----");
+                                Huffman.start(cont.getNomeUsuario());
+                                compressed += Huffman.compress(cont.getNomeUsuario());
+                                
+                                System.out.println("----- Senha -----");
+                                Huffman.start(cont.getSenha());
+                                compressed += Huffman.compress(cont.getSenha());
+
+                                System.out.println("----- CPF -----");
+                                Huffman.start(cont.getCpf());
+                                compressed += Huffman.compress(cont.getCpf());
+
+                                System.out.println("----- Cidade -----");
+                                Huffman.start(cont.getCidade());
+                                compressed += Huffman.compress(cont.getCidade());
+                                                               
+                                System.out.println("----- Saldo -----");
+                                Huffman.start("" + cont.getSaldoConta());
+                                compressed += Huffman.compress("" + cont.getSaldoConta());
+
+                                // System.out.println("----- Transferencias -----");
+                                // Huffman.start("" + cont.getTransferenciasRealizadas());
+                                // compressed += Huffman.compress("" + cont.getTransferenciasRealizadas());
+
+                                compFile.writeUTF(compressed);
+                                
+                            } else {
+                                aux1++;
+                            }
+    
+                            if (aux1 == id) {
+                                System.out.println("\nNumero ID nao encontrado!");
+                            } else {
+                                System.out.println("\nArquivo de registros lido com sucesso!");
+                            }
+
                             break;
 
                         case 2: //compressão por lzw
@@ -1498,9 +1541,6 @@ public class Banco {
                     }
 
                     break;
-                //case 9:
-                   
-                    //break;
 
                 default:
                     System.out.print("\n\nOpcao invalida!");
@@ -1528,6 +1568,7 @@ public class Banco {
 
         // ------------------------------------
         arq.close();
+        compFile.close();
     }
 
 }
