@@ -1397,6 +1397,7 @@ public class Banco {
                         case 1: //compressão por huffman
 
                             String compressed = "";
+                            long tempo = System.currentTimeMillis();
 
                             if (cont.getIdconta() == IDnum) {
 
@@ -1442,6 +1443,10 @@ public class Banco {
                                 // compressed += Huffman.compress("" + cont.getTransferenciasRealizadas());
 
                                 compFile.writeUTF(compressed);
+
+                                System.out.println("\n\nArquivo nao compactado (em bytes): " + arq.length());
+                                System.out.println("Arquivo compactado (em bytes): " + compFile.length());
+                                System.out.println("Tempo de compressao: " + (System.currentTimeMillis() - tempo) + "ms");
                                 
                             } else {
                                 aux1++;
