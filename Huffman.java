@@ -171,6 +171,8 @@ public class Huffman {
 
     // ----------------------------
 
+    // ---------- descompressao ----------
+
     public static String decompress(HuffmanTree tree, String text) {
         
         assert tree != null; // verifica se a árvore não é nula
@@ -199,4 +201,6 @@ public class Huffman {
 
         return decompress; // retorna string descompactada
     }
+
+    // -----------------------------------
 }
