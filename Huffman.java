@@ -47,44 +47,6 @@ class HuffmanNode extends HuffmanTree {
 // --------------------------------------------
 
 public class Huffman {
-    
-    // ---------- converter arquivo em string ----------
-
-    public static String convert (RandomAccessFile arq) {
-        String str = "";
-        
-        try {
-            arq.seek(4);
-            while (arq.getFilePointer() < arq.length()) {
-                if (arq.readChar() == ' ') // verificar se a lápide está ativa
-                {
-                    str += Integer.toString(arq.readInt()); // tamanho
-                    str += Integer.toString(arq.readInt()); // ID
-                    str += arq.readUTF(); // nome
-
-                    for (int i = 0; i < arq.readInt(); i++) {
-                        str += arq.readUTF(); // emails
-                    }
-
-                    str += arq.readUTF(); // user
-                    str += arq.readUTF(); // senha
-                    str += arq.readUTF(); // CPF
-                    str += arq.readUTF(); // cidade
-                    str += Integer.toString(arq.readInt()); // transferencias
-                    str += Float.toString(arq.readFloat()); // saldo
-                    str += " ";
-
-                } else {
-                    arq.skipBytes(arq.readInt()); // pular o registro
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Erro ao ler o arquivo");
-        }
-        return str;
-    }
-
-    // -------------------------------------------------
 
     // ---------- criar árvore ----------
 
@@ -116,12 +78,8 @@ public class Huffman {
 
     // ---------- inicio codigo ----------
 
-    public static void start (RandomAccessFile arq) throws Exception {
-
-        RandomAccessFile compFile = new RandomAccessFile("contasHuffmanCompressao1", "rw");
+    public static void start (String text) throws Exception {
         
-        String text = convert(arq); // converter arquivo em string
-
         // máximo de 256 caracteres diferentes
         int[] chars = new int[256];
         for (char c : text.toCharArray()) {
@@ -131,12 +89,10 @@ public class Huffman {
         HuffmanTree arvore = buildTree(chars); // criar uma árvore para a compactação
 
         String compress = compress(arvore, text); // compactar a string
-        compFile.writeUTF(compress);
+        System.out.println("Texto codificado: " + compress);
 
         String decompress = decompress(arvore, compress); // descompactar a string
         System.out.println("Texto decodificado: " + decompress);
-
-        compFile.close();
 
     }
 
@@ -157,6 +113,17 @@ public class Huffman {
         return compress; // retorna a string compactada
     }
         
+    public static String compress (String text) {
+        // máximo de 256 caracteres diferentes
+        int[] chars = new int[256];
+        for (char c : text.toCharArray()) {
+            chars[c]++;
+        }
+
+        HuffmanTree arvore = buildTree(chars); // criar uma árvore para a compactação
+        
+        return compress(arvore, text);
+    }
     // -------------------------------
 
     // ---------- codigo ----------
@@ -215,7 +182,7 @@ public class Huffman {
         for (char c : text.toCharArray()) {
             if (c == '0') {
                 if (no.left instanceof HuffmanLeaf) {
-                    decompress += ((HuffmanLeaf) no.left).value;
+                    decompress += ((HuffmanLeaf)no.left).value;
                     no = (HuffmanNode) tree;
                 } else {
                     no = (HuffmanNode) no.left;
