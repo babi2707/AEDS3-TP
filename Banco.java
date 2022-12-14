@@ -1610,14 +1610,15 @@ public class Banco {
 
                     //String que vai receber todos os dados da conta bancaria
                     StringBuffer text = new StringBuffer();
-                    text.append(cont.getNomePessoa());
-                    text.append(cont.getNomeUsuario());
                     text.append(Integer.toString(cont.getIdconta()));
+                    text.append(cont.getNomePessoa());
+                    text.append(cont.getEmail());
+                    text.append(cont.getNomeUsuario());
                     text.append(cont.getSenha());
                     text.append(cont.getCpf());
                     text.append(cont.getCidade());
                     text.append(Double.toString(cont.getSaldoConta()));
-                    text.append(cont.getEmail());
+                    
 
                     texto = text.toString();
 
@@ -1654,3 +1655,4 @@ public class Banco {
     }
 
 }
+
