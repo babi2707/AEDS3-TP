@@ -1017,6 +1017,7 @@ public class Banco {
             System.out.println("\t6- Intercalar arquivo");
             System.out.println("\t7- Lista Invertida");
             System.out.println("\t8- Compressao do arquivo");
+            System.out.println("\t9- Casamento de padroes por KMP");
             System.out.println("------------------------------------\n");
 
             do {
@@ -1598,6 +1599,29 @@ public class Banco {
 
                     }
 
+                    break;
+
+                case 9:
+                    System.out.println("\n\nOpcao escolhida: \n\t9- Casamento de padroes por KMP");
+                    System.out.println("\nDigite o padrao que deseja procurar nos dados de sua conta bacaria: ");
+                    
+                    String pattern = sc.next();
+                    String texto = "";
+
+                    //String que vai receber todos os dados da conta bancaria
+                    StringBuffer text = new StringBuffer();
+                    text.append(cont.getNomePessoa());
+                    text.append(cont.getNomeUsuario());
+                    text.append(Integer.toString(cont.getIdconta()));
+                    text.append(cont.getSenha());
+                    text.append(cont.getCpf());
+                    text.append(cont.getCidade());
+                    text.append(Double.toString(cont.getSaldoConta()));
+                    text.append(cont.getEmail());
+
+                    texto = text.toString();
+
+                    KMP.KMP(texto,pattern); 
                     break;
 
                 default:
